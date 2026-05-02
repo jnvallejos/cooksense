@@ -1,8 +1,13 @@
 """Vision endpoint: extract ingredients from an uploaded image.
 
-Phase 2 lands the vision pipeline in three steps. This file ships step 1 —
-upload validation + a synchronous call into the active `VisionExtractor`. The
-hash-based cache and the daily rate limiter are wired in follow-up commits.
+Phase 2 lands the vision pipeline incrementally. This file currently ships:
+- Upload validation against the configured size/format/dimension caps.
+- SHA-256 hash of the image bytes.
+- Hash-based `LLMCache` lookup → cached response on hit (kind="vision").
+- Synchronous call into the active `VisionExtractor` on miss, then normalize
+  via `IngredientReasoner` and persist to the cache with the configured TTL.
+
+The daily rate limiter is wired in the next commit.
 """
 
 from __future__ import annotations
@@ -22,6 +27,7 @@ from api.middleware.user_id import require_user_id
 from api.models.vision import DetectedIngredient, VisionExtractResponse
 from api.utils.image_validation import validate_image_upload
 from infrastructure.config import settings
+from infrastructure.storage.llm_cache import LLMCache
 from infrastructure.storage.postgres import get_session
 from infrastructure.storage.profile_repository import ProfileRepository
 
@@ -41,9 +47,21 @@ def extract_ingredients(
     extractor: VisionExtractor = Depends(get_vision_extractor),
     reasoner: IngredientReasoner = Depends(get_ingredient_reasoner),
 ) -> VisionExtractResponse:
-    """Validate the upload, hash the bytes, run extraction, return ingredients."""
+    """Validate the upload, hash the bytes, hit cache or call extractor."""
     image_bytes = validate_image_upload(image, settings)
     image_hash = hashlib.sha256(image_bytes).hexdigest()
+
+    cache = LLMCache(session)
+    cache_key = cache.make_key("vision", image_hash)
+
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return VisionExtractResponse(
+            ingredients=[DetectedIngredient(**item) for item in cached["ingredients"]],
+            image_hash=image_hash,
+            from_cache=True,
+            remaining_calls_today=settings.rate_limit_vision_per_day,
+        )
 
     language = _resolve_language(session, user_id)
     detected = extractor.extract(
@@ -52,6 +70,13 @@ def extract_ingredients(
         max_tokens=settings.anthropic_max_tokens_vision,
     )
     normalized = reasoner.normalize(detected, language=language)
+
+    cache.set(
+        cache_key,
+        kind="vision",
+        payload={"ingredients": normalized},
+        ttl_seconds=settings.cache_ttl_vision_seconds,
+    )
 
     return VisionExtractResponse(
         ingredients=[DetectedIngredient(**item) for item in normalized],
