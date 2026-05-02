@@ -9,10 +9,21 @@ from unittest.mock import MagicMock
 import pytest
 
 from api import deps as api_deps
-from api.deps import get_core_mode, get_ingredient_reasoner, get_recipe_ranker, get_translator
+from api.deps import (
+    get_core_mode,
+    get_ingredient_reasoner,
+    get_personalized_describer,
+    get_qa_responder,
+    get_recipe_ranker,
+    get_translator,
+    get_vision_extractor,
+)
 from stub import IngredientReasoner as StubReasoner
+from stub import PersonalizedDescriber as StubDescriber
+from stub import QAResponder as StubResponder
 from stub import RecipeRanker as StubRanker
 from stub import Translator as StubTranslator
+from stub import VisionExtractor as StubVision
 
 
 def test_core_mode_is_stub_when_proprietary_not_installed():
@@ -48,20 +59,28 @@ def test_stub_reasoner_is_used_when_in_stub_mode():
 # ---------------------------------------------------------------------------
 
 
+_CACHED_FACTORIES = (
+    "get_translator",
+    "get_vision_extractor",
+    "get_personalized_describer",
+    "get_qa_responder",
+)
+
+
 @pytest.fixture(autouse=True)
 def _clear_translator_cache():
-    """`get_translator` caches a single instance per process; reset around each test.
+    """Each cached factory is reset around every test so monkeypatched state lands."""
 
-    `cache_clear` only exists once `lru_cache` is applied to `get_translator`.
-    The guard keeps the fixture harmless if the cache decorator is removed.
-    """
-    clear = getattr(api_deps.get_translator, "cache_clear", None)
-    if clear is not None:
-        clear()
+    def _reset() -> None:
+        for name in _CACHED_FACTORIES:
+            factory = getattr(api_deps, name, None)
+            clear = getattr(factory, "cache_clear", None)
+            if clear is not None:
+                clear()
+
+    _reset()
     yield
-    clear = getattr(api_deps.get_translator, "cache_clear", None)
-    if clear is not None:
-        clear()
+    _reset()
 
 
 def test_get_translator_returns_stub_in_stub_mode():
@@ -127,3 +146,104 @@ def test_get_translator_proprietary_propagates_missing_api_key_error(monkeypatch
 
     with pytest.raises(_FakeAnthropicError, match="ANTHROPIC_API_KEY"):
         api_deps.get_translator()
+
+
+# ---------------------------------------------------------------------------
+# get_vision_extractor / get_personalized_describer / get_qa_responder
+# ---------------------------------------------------------------------------
+
+
+def _install_fake_anthropic(monkeypatch) -> object:
+    fake_client = object()
+    fake_anthropic = types.ModuleType("anthropic")
+    fake_anthropic.Anthropic = MagicMock(return_value=fake_client)
+    monkeypatch.setitem(sys.modules, "anthropic", fake_anthropic)
+    return fake_client
+
+
+def test_get_vision_extractor_returns_stub_in_stub_mode():
+    if get_core_mode() != "stub":
+        pytest.skip("requires stub mode")
+
+    extractor = get_vision_extractor()
+    assert isinstance(extractor, StubVision)
+    # 5 generic ingredients per spec section 8.2.
+    assert len(extractor.extract(b"")) == 5
+
+
+def test_get_personalized_describer_returns_stub_in_stub_mode():
+    if get_core_mode() != "stub":
+        pytest.skip("requires stub mode")
+
+    describer = get_personalized_describer()
+    assert isinstance(describer, StubDescriber)
+    assert describer.describe({}, {"language": "en"}) == StubDescriber.GENERIC_EN
+
+
+def test_get_qa_responder_returns_stub_in_stub_mode():
+    if get_core_mode() != "stub":
+        pytest.skip("requires stub mode")
+
+    responder = get_qa_responder()
+    assert isinstance(responder, StubResponder)
+    assert responder.answer({}, "?", []) == StubResponder.DEMO_EN
+
+
+def test_get_vision_extractor_constructs_anthropic_client_in_proprietary_mode(monkeypatch):
+    fake_client = _install_fake_anthropic(monkeypatch)
+    received: dict = {}
+
+    class FakeVision:
+        def __init__(self, client, model):
+            received["client"] = client
+            received["model"] = model
+
+    monkeypatch.setattr(api_deps, "_CORE_MODE", "proprietary")
+    monkeypatch.setattr(api_deps, "VisionExtractor", FakeVision)
+    monkeypatch.setattr(api_deps.settings, "anthropic_model_vision", "claude-sonnet-test")
+
+    instance = api_deps.get_vision_extractor()
+
+    assert isinstance(instance, FakeVision)
+    assert received["client"] is fake_client
+    assert received["model"] == "claude-sonnet-test"
+
+
+def test_get_personalized_describer_forwards_personalization_model(monkeypatch):
+    fake_client = _install_fake_anthropic(monkeypatch)
+    received: dict = {}
+
+    class FakeDescriber:
+        def __init__(self, client, model):
+            received["client"] = client
+            received["model"] = model
+
+    monkeypatch.setattr(api_deps, "_CORE_MODE", "proprietary")
+    monkeypatch.setattr(api_deps, "PersonalizedDescriber", FakeDescriber)
+    monkeypatch.setattr(api_deps.settings, "anthropic_model_personalization", "claude-haiku-test")
+
+    instance = api_deps.get_personalized_describer()
+
+    assert isinstance(instance, FakeDescriber)
+    assert received["client"] is fake_client
+    assert received["model"] == "claude-haiku-test"
+
+
+def test_get_qa_responder_forwards_qa_model(monkeypatch):
+    fake_client = _install_fake_anthropic(monkeypatch)
+    received: dict = {}
+
+    class FakeResponder:
+        def __init__(self, client, model):
+            received["client"] = client
+            received["model"] = model
+
+    monkeypatch.setattr(api_deps, "_CORE_MODE", "proprietary")
+    monkeypatch.setattr(api_deps, "QAResponder", FakeResponder)
+    monkeypatch.setattr(api_deps.settings, "anthropic_model_qa", "claude-sonnet-qa-test")
+
+    instance = api_deps.get_qa_responder()
+
+    assert isinstance(instance, FakeResponder)
+    assert received["client"] is fake_client
+    assert received["model"] == "claude-sonnet-qa-test"
