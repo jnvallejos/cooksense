@@ -1,0 +1,1286 @@
+[
+  {
+    "id": "r001",
+    "title": "Classic Margherita Pizza",
+    "title_es": "Pizza Margarita Clásica",
+    "ingredients": [
+      "pizza dough",
+      "tomato sauce",
+      "fresh mozzarella",
+      "basil leaves",
+      "olive oil",
+      "salt"
+    ],
+    "ingredients_es": [
+      "masa de pizza",
+      "salsa de tomate",
+      "mozzarella fresca",
+      "hojas de albahaca",
+      "aceite de oliva",
+      "sal"
+    ],
+    "instructions": [
+      "Preheat the oven to 250C with a pizza stone inside.",
+      "Stretch the dough on a floured surface to about 30cm.",
+      "Spread tomato sauce, top with sliced mozzarella and basil.",
+      "Drizzle olive oil and a pinch of salt.",
+      "Bake for 8 to 10 minutes until the crust is charred."
+    ],
+    "instructions_es": [
+      "Precalentar el horno a 250C con la piedra para pizza dentro.",
+      "Estirar la masa sobre superficie enharinada hasta unos 30cm.",
+      "Untar la salsa de tomate, agregar mozzarella en rodajas y albahaca.",
+      "Rociar aceite de oliva y una pizca de sal.",
+      "Hornear 8 a 10 minutos hasta que la masa esté dorada."
+    ],
+    "estimated_time_minutes": 30,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r002",
+    "title": "Spaghetti Aglio e Olio",
+    "title_es": "Espaguetis Aglio e Olio",
+    "ingredients": [
+      "spaghetti",
+      "garlic",
+      "olive oil",
+      "red pepper flakes",
+      "parsley",
+      "salt"
+    ],
+    "ingredients_es": [
+      "espaguetis",
+      "ajo",
+      "aceite de oliva",
+      "hojuelas de ají picante",
+      "perejil",
+      "sal"
+    ],
+    "instructions": [
+      "Boil spaghetti in salted water until al dente.",
+      "Slice garlic thinly and toast it in olive oil over low heat.",
+      "Add red pepper flakes when garlic is golden.",
+      "Toss the drained pasta with the oil, garlic and chopped parsley.",
+      "Season with salt and serve immediately."
+    ],
+    "instructions_es": [
+      "Hervir los espaguetis en agua con sal hasta que estén al dente.",
+      "Cortar el ajo en láminas finas y dorarlo en aceite de oliva a fuego bajo.",
+      "Agregar las hojuelas de ají cuando el ajo esté dorado.",
+      "Mezclar la pasta escurrida con el aceite, ajo y perejil picado.",
+      "Sazonar con sal y servir de inmediato."
+    ],
+    "estimated_time_minutes": 20,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r003",
+    "title": "Beef Tacos al Pastor",
+    "title_es": "Tacos de Res al Pastor",
+    "ingredients": [
+      "beef sirloin",
+      "pineapple",
+      "guajillo chilies",
+      "garlic",
+      "white onion",
+      "cilantro",
+      "corn tortillas",
+      "lime"
+    ],
+    "ingredients_es": [
+      "lomo de res",
+      "piña",
+      "chiles guajillo",
+      "ajo",
+      "cebolla blanca",
+      "cilantro",
+      "tortillas de maíz",
+      "lima"
+    ],
+    "instructions": [
+      "Soak guajillo chilies in hot water until soft.",
+      "Blend chilies with garlic, pineapple and a pinch of salt to make the marinade.",
+      "Marinate sliced beef for 2 hours in the fridge.",
+      "Sear the beef on a hot grill in batches.",
+      "Warm tortillas, fill with beef, diced onion and cilantro, finish with lime."
+    ],
+    "instructions_es": [
+      "Remojar los chiles guajillo en agua caliente hasta ablandarlos.",
+      "Licuar chiles con ajo, piña y una pizca de sal para el adobo.",
+      "Marinar la res rebanada 2 horas en la heladera.",
+      "Sellar la carne en plancha caliente por tandas.",
+      "Calentar las tortillas, rellenar con carne, cebolla picada y cilantro, terminar con lima."
+    ],
+    "estimated_time_minutes": 45,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r004",
+    "title": "Chicken Pad Thai",
+    "title_es": "Pad Thai de Pollo",
+    "ingredients": [
+      "rice noodles",
+      "chicken breast",
+      "eggs",
+      "bean sprouts",
+      "peanuts",
+      "lime",
+      "fish sauce",
+      "tamarind paste",
+      "palm sugar",
+      "scallions"
+    ],
+    "ingredients_es": [
+      "fideos de arroz",
+      "pechuga de pollo",
+      "huevos",
+      "brotes de soja",
+      "maní",
+      "lima",
+      "salsa de pescado",
+      "pasta de tamarindo",
+      "azúcar de palma",
+      "cebolla de verdeo"
+    ],
+    "instructions": [
+      "Soak rice noodles in warm water for 20 minutes.",
+      "Whisk fish sauce, tamarind paste and sugar into a sauce.",
+      "Stir-fry chicken in a hot wok until golden, set aside.",
+      "Scramble eggs in the same wok and add the noodles and sauce.",
+      "Toss in chicken, sprouts, scallions and crushed peanuts; finish with lime."
+    ],
+    "instructions_es": [
+      "Remojar los fideos de arroz en agua tibia por 20 minutos.",
+      "Mezclar salsa de pescado, pasta de tamarindo y azúcar para la salsa.",
+      "Saltear el pollo en wok bien caliente hasta dorar y reservar.",
+      "Revolver los huevos en el mismo wok y agregar los fideos con la salsa.",
+      "Incorporar pollo, brotes, verdeo y maní triturado; terminar con lima."
+    ],
+    "estimated_time_minutes": 35,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r005",
+    "title": "Greek Salad",
+    "title_es": "Ensalada Griega",
+    "ingredients": [
+      "tomatoes",
+      "cucumber",
+      "red onion",
+      "kalamata olives",
+      "feta cheese",
+      "olive oil",
+      "oregano",
+      "red wine vinegar"
+    ],
+    "ingredients_es": [
+      "tomates",
+      "pepino",
+      "cebolla morada",
+      "aceitunas kalamata",
+      "queso feta",
+      "aceite de oliva",
+      "orégano",
+      "vinagre de vino tinto"
+    ],
+    "instructions": [
+      "Cut tomatoes into wedges and slice the cucumber.",
+      "Slice red onion thinly and combine with vegetables in a bowl.",
+      "Add olives and a thick slab of feta on top.",
+      "Dress with olive oil, vinegar, salt and oregano."
+    ],
+    "instructions_es": [
+      "Cortar los tomates en gajos y rebanar el pepino.",
+      "Cortar la cebolla morada en julianas finas y mezclarla con los vegetales.",
+      "Agregar las aceitunas y un trozo grande de feta encima.",
+      "Aliñar con aceite de oliva, vinagre, sal y orégano."
+    ],
+    "estimated_time_minutes": 15,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r006",
+    "title": "Classic American Burger",
+    "title_es": "Hamburguesa Americana Clásica",
+    "ingredients": [
+      "ground beef",
+      "burger buns",
+      "cheddar cheese",
+      "lettuce",
+      "tomato",
+      "red onion",
+      "pickles",
+      "ketchup",
+      "mustard",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "carne molida",
+      "panes de hamburguesa",
+      "queso cheddar",
+      "lechuga",
+      "tomate",
+      "cebolla morada",
+      "pepinillos",
+      "ketchup",
+      "mostaza",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Form the beef into patties and season with salt and pepper.",
+      "Sear them on a hot skillet 3 minutes per side.",
+      "Top with cheddar in the last minute and let it melt.",
+      "Toast the buns and assemble with the toppings and condiments."
+    ],
+    "instructions_es": [
+      "Formar medallones con la carne y sazonar con sal y pimienta.",
+      "Cocinar a fuego fuerte 3 minutos por lado.",
+      "Coronar con cheddar el último minuto y dejar fundir.",
+      "Tostar los panes y armar con los vegetales y condimentos."
+    ],
+    "estimated_time_minutes": 25,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r007",
+    "title": "Chicken Tikka Masala",
+    "title_es": "Pollo Tikka Masala",
+    "ingredients": [
+      "chicken thighs",
+      "yogurt",
+      "garam masala",
+      "ginger",
+      "garlic",
+      "tomato puree",
+      "heavy cream",
+      "butter",
+      "onion",
+      "cilantro",
+      "rice"
+    ],
+    "ingredients_es": [
+      "muslos de pollo",
+      "yogur",
+      "garam masala",
+      "jengibre",
+      "ajo",
+      "puré de tomate",
+      "crema",
+      "manteca",
+      "cebolla",
+      "cilantro",
+      "arroz"
+    ],
+    "instructions": [
+      "Marinate chicken in yogurt, garam masala, ginger and garlic for an hour.",
+      "Sear chicken pieces under the grill until charred at the edges.",
+      "Sweat onion in butter, add tomato puree and simmer 10 minutes.",
+      "Stir in cream and the chicken; simmer until the sauce thickens.",
+      "Finish with cilantro and serve over rice."
+    ],
+    "instructions_es": [
+      "Marinar el pollo en yogur, garam masala, jengibre y ajo por una hora.",
+      "Dorar los trozos de pollo bajo el grill hasta marcar los bordes.",
+      "Sudar la cebolla en manteca, agregar puré de tomate y cocinar 10 minutos.",
+      "Incorporar la crema y el pollo; reducir hasta que la salsa espese.",
+      "Terminar con cilantro y servir con arroz."
+    ],
+    "estimated_time_minutes": 60,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r008",
+    "title": "Beef Bourguignon",
+    "title_es": "Beef Bourguignon",
+    "ingredients": [
+      "beef chuck",
+      "bacon",
+      "carrots",
+      "pearl onions",
+      "mushrooms",
+      "garlic",
+      "red wine",
+      "beef stock",
+      "tomato paste",
+      "thyme",
+      "bay leaves",
+      "flour"
+    ],
+    "ingredients_es": [
+      "paleta de res",
+      "panceta",
+      "zanahorias",
+      "cebollitas",
+      "hongos",
+      "ajo",
+      "vino tinto",
+      "caldo de res",
+      "extracto de tomate",
+      "tomillo",
+      "hojas de laurel",
+      "harina"
+    ],
+    "instructions": [
+      "Render the bacon in a Dutch oven and remove.",
+      "Brown the beef in batches and dust with flour.",
+      "Deglaze with red wine and add stock, tomato paste, thyme and bay leaves.",
+      "Braise in a 160C oven for 2.5 hours.",
+      "Sauté pearl onions and mushrooms separately and stir in at the end."
+    ],
+    "instructions_es": [
+      "Dorar la panceta en una cacerola pesada y retirarla.",
+      "Sellar la carne por tandas y espolvorear con harina.",
+      "Desglasar con vino tinto y agregar caldo, extracto de tomate, tomillo y laurel.",
+      "Braseado en horno a 160C por 2 horas y media.",
+      "Saltear cebollitas y hongos por separado e incorporar al final."
+    ],
+    "estimated_time_minutes": 90,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r009",
+    "title": "Argentinian Asado de Tira",
+    "title_es": "Asado de Tira Argentino",
+    "ingredients": [
+      "short ribs",
+      "salt",
+      "chimichurri",
+      "garlic",
+      "parsley",
+      "olive oil",
+      "red wine vinegar"
+    ],
+    "ingredients_es": [
+      "asado de tira",
+      "sal gruesa",
+      "chimichurri",
+      "ajo",
+      "perejil",
+      "aceite de oliva",
+      "vinagre de vino tinto"
+    ],
+    "instructions": [
+      "Season ribs heavily with coarse salt 30 minutes before cooking.",
+      "Build a hot wood-fire grill and let it settle to glowing embers.",
+      "Cook ribs bone-side down for 25 minutes, then flip 15 minutes more.",
+      "Mince parsley and garlic and combine with oil and vinegar for chimichurri.",
+      "Rest the ribs 5 minutes and slice between bones to serve."
+    ],
+    "instructions_es": [
+      "Sazonar el asado generosamente con sal gruesa 30 minutos antes.",
+      "Encender una parrilla a leña y esperar que las brasas estén tranquilas.",
+      "Cocinar el asado del lado del hueso por 25 minutos y dar vuelta 15 más.",
+      "Picar perejil y ajo y mezclar con aceite y vinagre para el chimichurri.",
+      "Descansar 5 minutos y cortar entre los huesos para servir."
+    ],
+    "estimated_time_minutes": 75,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r010",
+    "title": "Vegan Lentil Curry",
+    "title_es": "Curry Vegano de Lentejas",
+    "ingredients": [
+      "red lentils",
+      "coconut milk",
+      "onion",
+      "garlic",
+      "ginger",
+      "tomato",
+      "curry powder",
+      "turmeric",
+      "spinach",
+      "lime"
+    ],
+    "ingredients_es": [
+      "lentejas rojas",
+      "leche de coco",
+      "cebolla",
+      "ajo",
+      "jengibre",
+      "tomate",
+      "curry en polvo",
+      "cúrcuma",
+      "espinaca",
+      "lima"
+    ],
+    "instructions": [
+      "Sauté onion, garlic and ginger until fragrant.",
+      "Add curry powder and turmeric, then tomato; cook 3 minutes.",
+      "Stir in lentils and coconut milk; simmer 25 minutes.",
+      "Wilt spinach into the curry just before serving.",
+      "Finish with a squeeze of lime."
+    ],
+    "instructions_es": [
+      "Saltear cebolla, ajo y jengibre hasta que estén perfumados.",
+      "Agregar curry y cúrcuma, luego el tomate; cocinar 3 minutos.",
+      "Incorporar las lentejas y la leche de coco; cocinar 25 minutos.",
+      "Marchar la espinaca en el curry justo antes de servir.",
+      "Terminar con un chorrito de lima."
+    ],
+    "estimated_time_minutes": 35,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r011",
+    "title": "Avocado Toast with Poached Egg",
+    "title_es": "Tostada de Palta con Huevo Poché",
+    "ingredients": [
+      "sourdough bread",
+      "avocado",
+      "egg",
+      "lemon",
+      "chili flakes",
+      "olive oil",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "pan de masa madre",
+      "palta",
+      "huevo",
+      "limón",
+      "hojuelas de ají",
+      "aceite de oliva",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Toast the bread until golden.",
+      "Mash the avocado with lemon, salt and pepper.",
+      "Poach the egg in simmering vinegared water for 3 minutes.",
+      "Spread avocado on toast and top with the egg, chili flakes and oil."
+    ],
+    "instructions_es": [
+      "Tostar el pan hasta que esté dorado.",
+      "Pisar la palta con limón, sal y pimienta.",
+      "Pochar el huevo en agua a fuego bajo con vinagre por 3 minutos.",
+      "Untar la palta sobre la tostada y coronar con el huevo, ají y aceite."
+    ],
+    "estimated_time_minutes": 15,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r012",
+    "title": "Caprese Salad",
+    "title_es": "Ensalada Caprese",
+    "ingredients": [
+      "tomatoes",
+      "mozzarella di bufala",
+      "basil",
+      "olive oil",
+      "balsamic glaze",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "tomates",
+      "mozzarella de búfala",
+      "albahaca",
+      "aceite de oliva",
+      "reducción de balsámico",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Slice tomatoes and mozzarella into 1cm rounds.",
+      "Layer them on a plate alternating with basil leaves.",
+      "Season with salt and pepper.",
+      "Drizzle olive oil and a touch of balsamic glaze."
+    ],
+    "instructions_es": [
+      "Cortar los tomates y la mozzarella en rodajas de 1cm.",
+      "Disponer en un plato alternando con hojas de albahaca.",
+      "Sazonar con sal y pimienta.",
+      "Rociar aceite de oliva y un toque de reducción de balsámico."
+    ],
+    "estimated_time_minutes": 15,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r013",
+    "title": "Mexican Chilaquiles Verdes",
+    "title_es": "Chilaquiles Verdes",
+    "ingredients": [
+      "tortilla chips",
+      "tomatillos",
+      "jalapenos",
+      "onion",
+      "garlic",
+      "cilantro",
+      "queso fresco",
+      "sour cream",
+      "eggs",
+      "vegetable oil"
+    ],
+    "ingredients_es": [
+      "totopos de maíz",
+      "tomatillos",
+      "jalapeños",
+      "cebolla",
+      "ajo",
+      "cilantro",
+      "queso fresco",
+      "crema",
+      "huevos",
+      "aceite vegetal"
+    ],
+    "instructions": [
+      "Boil tomatillos and jalapenos until soft.",
+      "Blend with onion, garlic and cilantro for the salsa verde.",
+      "Simmer the salsa with a splash of oil.",
+      "Toss in the chips so they soften slightly.",
+      "Top with fried eggs, queso fresco, crema and onion."
+    ],
+    "instructions_es": [
+      "Hervir tomatillos y jalapeños hasta que estén blandos.",
+      "Licuar con cebolla, ajo y cilantro para la salsa verde.",
+      "Cocinar la salsa con un chorrito de aceite.",
+      "Agregar los totopos para que se ablanden un poco.",
+      "Coronar con huevos fritos, queso fresco, crema y cebolla."
+    ],
+    "estimated_time_minutes": 30,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r014",
+    "title": "Mediterranean Grilled Sea Bass",
+    "title_es": "Lubina a la Parrilla Mediterránea",
+    "ingredients": [
+      "sea bass",
+      "lemon",
+      "olive oil",
+      "garlic",
+      "thyme",
+      "cherry tomatoes",
+      "olives",
+      "capers",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "lubina",
+      "limón",
+      "aceite de oliva",
+      "ajo",
+      "tomillo",
+      "tomates cherry",
+      "aceitunas",
+      "alcaparras",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Score the fish skin and season the cavity with thyme, lemon and salt.",
+      "Brush with olive oil and grill 6 minutes per side.",
+      "Sauté tomatoes, olives and capers in olive oil with garlic.",
+      "Spoon the warm relish over the fish to serve."
+    ],
+    "instructions_es": [
+      "Hacer cortes en la piel y sazonar la cavidad con tomillo, limón y sal.",
+      "Pincelar con aceite y cocinar a la parrilla 6 minutos por lado.",
+      "Saltear tomates, aceitunas y alcaparras en aceite con ajo.",
+      "Cucharear la guarnición tibia sobre el pescado para servir."
+    ],
+    "estimated_time_minutes": 35,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r015",
+    "title": "French Onion Soup",
+    "title_es": "Sopa de Cebolla Francesa",
+    "ingredients": [
+      "yellow onions",
+      "butter",
+      "beef stock",
+      "white wine",
+      "thyme",
+      "bay leaf",
+      "baguette",
+      "gruyere cheese",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "cebollas amarillas",
+      "manteca",
+      "caldo de res",
+      "vino blanco",
+      "tomillo",
+      "hoja de laurel",
+      "baguette",
+      "queso gruyere",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Slice onions and caramelize in butter for 45 minutes on low heat.",
+      "Deglaze with white wine and add stock, thyme and bay leaf.",
+      "Simmer 20 minutes, season to taste.",
+      "Top with toasted baguette and grated gruyere.",
+      "Broil until the cheese bubbles and turns golden."
+    ],
+    "instructions_es": [
+      "Cortar las cebollas y caramelizarlas en manteca 45 minutos a fuego bajo.",
+      "Desglasar con vino blanco y agregar caldo, tomillo y laurel.",
+      "Hervir suave 20 minutos y rectificar la sal.",
+      "Coronar con baguette tostada y gruyere rallado.",
+      "Gratinar hasta que el queso burbujee y se dore."
+    ],
+    "estimated_time_minutes": 80,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r016",
+    "title": "Vegan Buddha Bowl",
+    "title_es": "Buddha Bowl Vegano",
+    "ingredients": [
+      "quinoa",
+      "chickpeas",
+      "sweet potato",
+      "kale",
+      "avocado",
+      "tahini",
+      "lemon",
+      "olive oil",
+      "cumin",
+      "salt"
+    ],
+    "ingredients_es": [
+      "quinoa",
+      "garbanzos",
+      "batata",
+      "kale",
+      "palta",
+      "tahini",
+      "limón",
+      "aceite de oliva",
+      "comino",
+      "sal"
+    ],
+    "instructions": [
+      "Roast cubed sweet potato and chickpeas with cumin at 200C for 25 minutes.",
+      "Cook quinoa in salted water and fluff.",
+      "Massage kale with olive oil, salt and lemon juice.",
+      "Whisk tahini with lemon and water for the dressing.",
+      "Assemble bowls with quinoa, vegetables, avocado and dressing."
+    ],
+    "instructions_es": [
+      "Asar batata en cubos y garbanzos con comino a 200C por 25 minutos.",
+      "Cocinar la quinoa en agua con sal y airearla con un tenedor.",
+      "Masajear el kale con aceite, sal y jugo de limón.",
+      "Mezclar tahini con limón y agua para el aderezo.",
+      "Armar los bowls con quinoa, vegetales, palta y aderezo."
+    ],
+    "estimated_time_minutes": 40,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r017",
+    "title": "Argentinian Empanadas de Carne",
+    "title_es": "Empanadas de Carne",
+    "ingredients": [
+      "beef",
+      "onion",
+      "green bell pepper",
+      "hard boiled eggs",
+      "olives",
+      "cumin",
+      "paprika",
+      "empanada discs",
+      "egg yolk",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "carne",
+      "cebolla",
+      "morrón verde",
+      "huevos duros",
+      "aceitunas",
+      "comino",
+      "pimentón",
+      "tapas de empanadas",
+      "yema de huevo",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Sauté onion and bell pepper, then add chopped beef.",
+      "Season with cumin, paprika, salt and pepper; cool the filling.",
+      "Fill discs with beef, sliced egg and olive; fold and crimp the edges.",
+      "Brush with egg yolk and bake at 200C for 18 minutes."
+    ],
+    "instructions_es": [
+      "Saltear cebolla y morrón, agregar la carne picada.",
+      "Sazonar con comino, pimentón, sal y pimienta; enfriar el relleno.",
+      "Rellenar las tapas con carne, huevo y aceituna; doblar y repulgar.",
+      "Pincelar con yema y hornear a 200C por 18 minutos."
+    ],
+    "estimated_time_minutes": 60,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r018",
+    "title": "Mushroom Risotto",
+    "title_es": "Risotto de Hongos",
+    "ingredients": [
+      "arborio rice",
+      "porcini mushrooms",
+      "white wine",
+      "vegetable stock",
+      "shallots",
+      "garlic",
+      "parmesan",
+      "butter",
+      "thyme",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "arroz arborio",
+      "hongos porcini",
+      "vino blanco",
+      "caldo de verduras",
+      "echalotes",
+      "ajo",
+      "parmesano",
+      "manteca",
+      "tomillo",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Rehydrate porcini in warm stock and chop them.",
+      "Sweat shallots and garlic in butter, then add rice and toast 2 minutes.",
+      "Deglaze with wine and ladle stock in slowly while stirring.",
+      "Stir in mushrooms after 12 minutes.",
+      "Finish with butter and parmesan; rest 2 minutes covered before serving."
+    ],
+    "instructions_es": [
+      "Hidratar los porcini en caldo tibio y picarlos.",
+      "Sudar los echalotes y el ajo en manteca, agregar el arroz y tostar 2 minutos.",
+      "Desglasar con vino y agregar caldo de a poco mientras se revuelve.",
+      "Incorporar los hongos a los 12 minutos.",
+      "Terminar con manteca y parmesano; descansar tapado 2 minutos antes de servir."
+    ],
+    "estimated_time_minutes": 50,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r019",
+    "title": "Indian Dal Makhani",
+    "title_es": "Dal Makhani",
+    "ingredients": [
+      "black lentils",
+      "kidney beans",
+      "tomato",
+      "ginger",
+      "garlic",
+      "garam masala",
+      "butter",
+      "cream",
+      "cumin",
+      "fenugreek leaves",
+      "salt"
+    ],
+    "ingredients_es": [
+      "lentejas negras",
+      "porotos rojos",
+      "tomate",
+      "jengibre",
+      "ajo",
+      "garam masala",
+      "manteca",
+      "crema",
+      "comino",
+      "fenogreco",
+      "sal"
+    ],
+    "instructions": [
+      "Soak lentils and beans overnight; pressure cook until very tender.",
+      "Sauté ginger, garlic and cumin in butter, add tomato and spices.",
+      "Combine with the lentils and simmer 45 minutes, stirring often.",
+      "Stir in cream and crushed fenugreek; rest 10 minutes before serving."
+    ],
+    "instructions_es": [
+      "Remojar lentejas y porotos durante la noche; cocinar a presión hasta ablandar.",
+      "Saltear jengibre, ajo y comino en manteca; agregar tomate y especias.",
+      "Combinar con las legumbres y cocinar 45 minutos revolviendo seguido.",
+      "Incorporar la crema y el fenogreco aplastado; reposar 10 minutos antes de servir."
+    ],
+    "estimated_time_minutes": 90,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r020",
+    "title": "Banana Pancakes",
+    "title_es": "Panqueques de Banana",
+    "ingredients": [
+      "ripe banana",
+      "eggs",
+      "flour",
+      "milk",
+      "baking powder",
+      "salt",
+      "butter",
+      "maple syrup"
+    ],
+    "ingredients_es": [
+      "banana madura",
+      "huevos",
+      "harina",
+      "leche",
+      "polvo para hornear",
+      "sal",
+      "manteca",
+      "miel de maple"
+    ],
+    "instructions": [
+      "Mash banana and whisk with eggs and milk.",
+      "Sift in flour, baking powder and salt; whisk until smooth.",
+      "Cook ladles of batter in buttered pan until bubbles form, then flip.",
+      "Serve with maple syrup."
+    ],
+    "instructions_es": [
+      "Pisar la banana y mezclar con los huevos y la leche.",
+      "Tamizar harina, polvo para hornear y sal; integrar hasta lograr una masa lisa.",
+      "Cocinar cucharones de masa en sartén con manteca hasta que aparezcan burbujas y dar vuelta.",
+      "Servir con miel de maple."
+    ],
+    "estimated_time_minutes": 20,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r021",
+    "title": "Shakshuka",
+    "title_es": "Shakshuka",
+    "ingredients": [
+      "eggs",
+      "tomato",
+      "onion",
+      "red bell pepper",
+      "garlic",
+      "paprika",
+      "cumin",
+      "harissa",
+      "feta cheese",
+      "parsley",
+      "olive oil",
+      "salt"
+    ],
+    "ingredients_es": [
+      "huevos",
+      "tomate",
+      "cebolla",
+      "morrón rojo",
+      "ajo",
+      "pimentón",
+      "comino",
+      "harissa",
+      "queso feta",
+      "perejil",
+      "aceite de oliva",
+      "sal"
+    ],
+    "instructions": [
+      "Sauté onion and pepper in olive oil until soft.",
+      "Add garlic, paprika, cumin and harissa; cook 1 minute.",
+      "Pour in tomatoes and simmer 15 minutes.",
+      "Crack eggs onto the sauce and cover until whites are set.",
+      "Top with feta and parsley; serve with bread."
+    ],
+    "instructions_es": [
+      "Saltear cebolla y morrón en aceite hasta ablandar.",
+      "Agregar ajo, pimentón, comino y harissa; cocinar 1 minuto.",
+      "Verter el tomate y cocinar 15 minutos.",
+      "Romper los huevos sobre la salsa y tapar hasta que las claras estén cuajadas.",
+      "Coronar con feta y perejil; servir con pan."
+    ],
+    "estimated_time_minutes": 30,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r022",
+    "title": "Sushi Rolls California",
+    "title_es": "Rolls California",
+    "ingredients": [
+      "sushi rice",
+      "rice vinegar",
+      "nori sheets",
+      "imitation crab",
+      "avocado",
+      "cucumber",
+      "sesame seeds",
+      "soy sauce"
+    ],
+    "ingredients_es": [
+      "arroz para sushi",
+      "vinagre de arroz",
+      "láminas de nori",
+      "kani",
+      "palta",
+      "pepino",
+      "semillas de sésamo",
+      "salsa de soja"
+    ],
+    "instructions": [
+      "Cook sushi rice and season with vinegar; cool to room temperature.",
+      "Place a nori sheet rough-side up on a bamboo mat and spread rice evenly.",
+      "Flip the sheet, lay crab, avocado and cucumber on the nori.",
+      "Roll tightly inside the mat and press to shape.",
+      "Sprinkle sesame and slice with a sharp knife; serve with soy sauce."
+    ],
+    "instructions_es": [
+      "Cocinar el arroz y sazonarlo con vinagre; enfriar a temperatura ambiente.",
+      "Poner una lámina de nori sobre la esterilla con la cara rugosa hacia arriba y repartir el arroz.",
+      "Dar vuelta la lámina y colocar kani, palta y pepino sobre el nori.",
+      "Enrollar firme con la esterilla y presionar para dar forma.",
+      "Espolvorear sésamo y cortar con cuchillo bien afilado; servir con salsa de soja."
+    ],
+    "estimated_time_minutes": 50,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r023",
+    "title": "Quinoa Stuffed Peppers",
+    "title_es": "Pimientos Rellenos de Quinoa",
+    "ingredients": [
+      "bell peppers",
+      "quinoa",
+      "black beans",
+      "corn",
+      "tomato",
+      "onion",
+      "cumin",
+      "lime",
+      "cilantro",
+      "olive oil",
+      "salt"
+    ],
+    "ingredients_es": [
+      "morrones",
+      "quinoa",
+      "porotos negros",
+      "choclo",
+      "tomate",
+      "cebolla",
+      "comino",
+      "lima",
+      "cilantro",
+      "aceite de oliva",
+      "sal"
+    ],
+    "instructions": [
+      "Halve peppers and remove seeds.",
+      "Cook quinoa in salted water and combine with sautéed onion, beans, corn and tomato.",
+      "Season with cumin, lime, cilantro and salt.",
+      "Stuff peppers and bake at 190C for 25 minutes.",
+      "Serve hot with extra lime."
+    ],
+    "instructions_es": [
+      "Cortar los morrones por la mitad y quitar las semillas.",
+      "Cocinar la quinoa en agua con sal y combinar con cebolla salteada, porotos, choclo y tomate.",
+      "Sazonar con comino, lima, cilantro y sal.",
+      "Rellenar los morrones y hornear a 190C por 25 minutos.",
+      "Servir caliente con más lima."
+    ],
+    "estimated_time_minutes": 45,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r024",
+    "title": "Korean Bibimbap",
+    "title_es": "Bibimbap Coreano",
+    "ingredients": [
+      "short-grain rice",
+      "beef sirloin",
+      "spinach",
+      "carrots",
+      "bean sprouts",
+      "shiitake mushrooms",
+      "egg",
+      "gochujang",
+      "sesame oil",
+      "soy sauce",
+      "garlic",
+      "sesame seeds"
+    ],
+    "ingredients_es": [
+      "arroz de grano corto",
+      "lomo de res",
+      "espinaca",
+      "zanahorias",
+      "brotes de soja",
+      "hongos shiitake",
+      "huevo",
+      "gochujang",
+      "aceite de sésamo",
+      "salsa de soja",
+      "ajo",
+      "semillas de sésamo"
+    ],
+    "instructions": [
+      "Cook rice and keep warm.",
+      "Stir-fry each vegetable separately with garlic, sesame oil and a touch of soy sauce.",
+      "Marinate sliced beef in soy, garlic, sesame oil; sear quickly.",
+      "Fry an egg sunny-side up.",
+      "Build the bowl with rice, vegetables, beef and egg; finish with gochujang and sesame."
+    ],
+    "instructions_es": [
+      "Cocinar el arroz y mantenerlo tibio.",
+      "Saltear cada vegetal por separado con ajo, aceite de sésamo y un toque de salsa de soja.",
+      "Marinar el lomo en soja, ajo y sésamo; sellar rápido.",
+      "Freír un huevo del lado del sol.",
+      "Armar el bowl con arroz, vegetales, carne y huevo; terminar con gochujang y sésamo."
+    ],
+    "estimated_time_minutes": 60,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r025",
+    "title": "Italian Tiramisu",
+    "title_es": "Tiramisú",
+    "ingredients": [
+      "ladyfingers",
+      "espresso",
+      "mascarpone",
+      "egg yolks",
+      "sugar",
+      "marsala wine",
+      "cocoa powder"
+    ],
+    "ingredients_es": [
+      "vainillas",
+      "café espresso",
+      "mascarpone",
+      "yemas de huevo",
+      "azúcar",
+      "vino marsala",
+      "cacao en polvo"
+    ],
+    "instructions": [
+      "Whisk yolks with sugar over a bain-marie until pale and thick.",
+      "Cool and fold in mascarpone and a splash of marsala.",
+      "Dip ladyfingers briefly in cold espresso and layer in a dish.",
+      "Spread the mascarpone cream over and repeat layers.",
+      "Refrigerate at least 4 hours; dust with cocoa before serving."
+    ],
+    "instructions_es": [
+      "Batir las yemas con el azúcar a baño maría hasta que estén pálidas y espesas.",
+      "Enfriar e integrar el mascarpone y un chorro de marsala.",
+      "Pasar las vainillas brevemente por el café frío y disponerlas en una fuente.",
+      "Untar la crema de mascarpone y repetir las capas.",
+      "Refrigerar al menos 4 horas; espolvorear cacao antes de servir."
+    ],
+    "estimated_time_minutes": 40,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r026",
+    "title": "Vegetable Stir Fry",
+    "title_es": "Salteado de Verduras",
+    "ingredients": [
+      "broccoli",
+      "carrot",
+      "bell pepper",
+      "snow peas",
+      "garlic",
+      "ginger",
+      "soy sauce",
+      "sesame oil",
+      "rice"
+    ],
+    "ingredients_es": [
+      "brócoli",
+      "zanahoria",
+      "morrón",
+      "arvejas chinas",
+      "ajo",
+      "jengibre",
+      "salsa de soja",
+      "aceite de sésamo",
+      "arroz"
+    ],
+    "instructions": [
+      "Cook rice and keep warm.",
+      "Heat oil in a wok and add ginger and garlic.",
+      "Throw in vegetables in stages from hardest to softest.",
+      "Splash soy sauce and sesame oil; toss for 2 minutes.",
+      "Serve over rice."
+    ],
+    "instructions_es": [
+      "Cocinar el arroz y mantenerlo tibio.",
+      "Calentar aceite en wok y agregar jengibre y ajo.",
+      "Sumar las verduras en etapas, de la más dura a la más tierna.",
+      "Verter salsa de soja y aceite de sésamo; saltear 2 minutos.",
+      "Servir sobre el arroz."
+    ],
+    "estimated_time_minutes": 25,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r027",
+    "title": "Croque Monsieur",
+    "title_es": "Croque Monsieur",
+    "ingredients": [
+      "white bread",
+      "ham",
+      "gruyere cheese",
+      "butter",
+      "milk",
+      "flour",
+      "dijon mustard",
+      "nutmeg",
+      "salt",
+      "pepper"
+    ],
+    "ingredients_es": [
+      "pan blanco",
+      "jamón",
+      "queso gruyere",
+      "manteca",
+      "leche",
+      "harina",
+      "mostaza dijon",
+      "nuez moscada",
+      "sal",
+      "pimienta"
+    ],
+    "instructions": [
+      "Make a béchamel with butter, flour and milk; season with mustard and nutmeg.",
+      "Butter the bread and assemble sandwiches with ham and gruyere.",
+      "Spread béchamel on top and add more cheese.",
+      "Broil until the top is bubbling and golden."
+    ],
+    "instructions_es": [
+      "Hacer una bechamel con manteca, harina y leche; sazonar con mostaza y nuez moscada.",
+      "Untar el pan con manteca y armar los sándwiches con jamón y gruyere.",
+      "Cubrir con bechamel y más queso por arriba.",
+      "Gratinar hasta que la superficie burbujee y se dore."
+    ],
+    "estimated_time_minutes": 30,
+    "estimated_skill": "intermediate"
+  },
+  {
+    "id": "r028",
+    "title": "Granola Yogurt Parfait",
+    "title_es": "Parfait de Yogur y Granola",
+    "ingredients": [
+      "greek yogurt",
+      "granola",
+      "berries",
+      "honey",
+      "almonds",
+      "vanilla"
+    ],
+    "ingredients_es": [
+      "yogur griego",
+      "granola",
+      "frutos rojos",
+      "miel",
+      "almendras",
+      "vainilla"
+    ],
+    "instructions": [
+      "Stir vanilla into the yogurt.",
+      "Layer yogurt, berries and granola in a glass.",
+      "Repeat the layers until the glass is full.",
+      "Drizzle with honey and top with almonds."
+    ],
+    "instructions_es": [
+      "Integrar la vainilla al yogur.",
+      "Disponer en capas yogur, frutos rojos y granola en un vaso.",
+      "Repetir las capas hasta llenar el vaso.",
+      "Rociar con miel y coronar con almendras."
+    ],
+    "estimated_time_minutes": 15,
+    "estimated_skill": "beginner"
+  },
+  {
+    "id": "r029",
+    "title": "Lamb Tagine with Apricots",
+    "title_es": "Tajine de Cordero con Damascos",
+    "ingredients": [
+      "lamb shoulder",
+      "onion",
+      "garlic",
+      "ginger",
+      "cinnamon",
+      "cumin",
+      "coriander",
+      "turmeric",
+      "saffron",
+      "dried apricots",
+      "honey",
+      "almonds",
+      "couscous"
+    ],
+    "ingredients_es": [
+      "paleta de cordero",
+      "cebolla",
+      "ajo",
+      "jengibre",
+      "canela",
+      "comino",
+      "cilantro molido",
+      "cúrcuma",
+      "azafrán",
+      "damascos secos",
+      "miel",
+      "almendras",
+      "cuscús"
+    ],
+    "instructions": [
+      "Brown lamb chunks in olive oil and remove.",
+      "Sauté onion, garlic and ginger; stir in spices and saffron.",
+      "Return lamb with water and apricots; simmer covered for 90 minutes.",
+      "Stir in honey and toasted almonds at the end.",
+      "Serve over fluffy couscous."
+    ],
+    "instructions_es": [
+      "Sellar trozos de cordero en aceite de oliva y reservar.",
+      "Saltear cebolla, ajo y jengibre; incorporar las especias y el azafrán.",
+      "Devolver el cordero con agua y damascos; cocinar tapado 90 minutos.",
+      "Agregar miel y almendras tostadas al final.",
+      "Servir sobre cuscús esponjoso."
+    ],
+    "estimated_time_minutes": 90,
+    "estimated_skill": "pro"
+  },
+  {
+    "id": "r030",
+    "title": "Vegan Chocolate Mousse",
+    "title_es": "Mousse de Chocolate Vegano",
+    "ingredients": [
+      "silken tofu",
+      "dark chocolate",
+      "maple syrup",
+      "vanilla",
+      "cocoa powder",
+      "salt"
+    ],
+    "ingredients_es": [
+      "tofu sedoso",
+      "chocolate amargo",
+      "miel de maple",
+      "vainilla",
+      "cacao en polvo",
+      "sal"
+    ],
+    "instructions": [
+      "Melt dark chocolate over a bain-marie and let it cool slightly.",
+      "Blend tofu with chocolate, maple syrup, vanilla, cocoa and a pinch of salt until silky.",
+      "Spoon into ramekins and chill for at least 2 hours."
+    ],
+    "instructions_es": [
+      "Derretir el chocolate amargo a baño maría y dejar templar.",
+      "Licuar el tofu con el chocolate, miel de maple, vainilla, cacao y una pizca de sal hasta lograr una textura suave.",
+      "Repartir en ramequines y enfriar al menos 2 horas."
+    ],
+    "estimated_time_minutes": 25,
+    "estimated_skill": "intermediate"
+  }
+]
