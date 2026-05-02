@@ -17,3 +17,4 @@ class Recipe(BaseModel):
     estimated_skill: str = Field(pattern="^(beginner|intermediate|pro)$")
     match_percentage: float = Field(ge=0.0, le=1.0)
     score: float = Field(ge=0.0)
+    personalized_description: str | None = None
