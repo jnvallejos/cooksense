@@ -242,3 +242,135 @@ def test_search_returns_recipes_in_ranker_order(client, headers, fake_repo, app)
     assert response.status_code == 200
     ids = [r["id"] for r in response.json()["recipes"]]
     assert ids == ["second", "first"]
+
+
+# --- Personalization (Phase 2) ---
+
+
+def _wider_repo() -> _FakeRepo:
+    """Repo with 8 candidates so we can test the top-N personalization cap."""
+    base = {
+        "ingredients": ["tomato"],
+        "ingredients_es": ["tomate"],
+        "instructions": ["go"],
+        "instructions_es": ["ir"],
+        "estimated_time_minutes": 20,
+        "estimated_skill": "beginner",
+    }
+    return _FakeRepo(
+        recipes=[
+            {"id": f"r{i}", "title": f"Recipe {i}", "title_es": f"Receta {i}", **base}
+            for i in range(8)
+        ]
+    )
+
+
+@pytest.fixture
+def wider_repo(app) -> _FakeRepo:
+    repo = _wider_repo()
+    app.dependency_overrides[get_recipe_repository] = lambda: repo
+    return repo
+
+
+class _RecordingDescriber:
+    """Records every describe() call so tests can assert top-N truncation."""
+
+    def __init__(self) -> None:
+        self.calls: list[dict] = []
+
+    def describe(self, recipe, profile, max_tokens=512):
+        self.calls.append({"recipe_id": recipe.get("id"), "profile": dict(profile)})
+        lang = profile.get("language", "en")
+        return f"[{lang}] personalized for {recipe.get('id')}"
+
+
+def test_search_personalizes_only_top_n_recipes(client, headers, wider_repo, app):
+    """`personalize_top_n_recipes` defaults to 5; later results stay None."""
+    from api.deps import get_personalized_describer
+
+    describer = _RecordingDescriber()
+    app.dependency_overrides[get_personalized_describer] = lambda: describer
+
+    response = client.post(
+        "/api/recipes/search",
+        json={"ingredients": ["tomato"], "limit": 8},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    recipes = response.json()["recipes"]
+    assert len(recipes) == 8
+    described_ids = [r["id"] for r in recipes if r.get("personalized_description")]
+    assert len(described_ids) == 5
+    assert described_ids == [r["id"] for r in recipes[:5]]
+
+
+def test_search_personalization_uses_profile_language(client, headers, wider_repo, app, user_id):
+    """The describer receives the user's profile language."""
+    from api.deps import get_personalized_describer
+
+    profile_payload = {
+        "cooking_for": "self",
+        "household_size": 1,
+        "dietary_restrictions": [],
+        "fitness_goal": "none",
+        "cooking_skill": "beginner",
+        "time_budget_minutes": 30,
+        "language": "es",
+    }
+    client.post("/api/profile", json=profile_payload, headers=headers)
+
+    describer = _RecordingDescriber()
+    app.dependency_overrides[get_personalized_describer] = lambda: describer
+
+    response = client.post(
+        "/api/recipes/search",
+        json={"ingredients": ["tomato"], "limit": 5},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert all(call["profile"]["language"] == "es" for call in describer.calls)
+    assert response.json()["recipes"][0]["personalized_description"].startswith("[es]")
+
+
+def test_search_personalization_is_cached_across_calls(client, headers, wider_repo, app):
+    """Identical (recipe, profile_signature) hits the cache instead of describing again."""
+    from api.deps import get_personalized_describer
+
+    describer = _RecordingDescriber()
+    app.dependency_overrides[get_personalized_describer] = lambda: describer
+
+    payload = {"ingredients": ["tomato"], "limit": 5}
+    client.post("/api/recipes/search", json=payload, headers=headers)
+    first_calls = len(describer.calls)
+
+    client.post("/api/recipes/search", json=payload, headers=headers)
+    second_calls = len(describer.calls)
+
+    assert first_calls == 5
+    assert second_calls == first_calls  # second request fully served from cache
+
+
+def test_search_personalization_respects_top_n_config(
+    client, headers, wider_repo, app, monkeypatch
+):
+    """Config drives personalization — never hardcoded."""
+    from api.deps import get_personalized_describer
+    from infrastructure import config as config_module
+
+    monkeypatch.setattr(config_module.settings, "personalize_top_n_recipes", 2)
+
+    describer = _RecordingDescriber()
+    app.dependency_overrides[get_personalized_describer] = lambda: describer
+
+    response = client.post(
+        "/api/recipes/search",
+        json={"ingredients": ["tomato"], "limit": 6},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    recipes = response.json()["recipes"]
+    described = [r for r in recipes if r.get("personalized_description")]
+    assert len(described) == 2
