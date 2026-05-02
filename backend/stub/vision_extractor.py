@@ -7,7 +7,6 @@ implementation in `cooksense-core` calls Claude Vision.
 
 from __future__ import annotations
 
-
 _DEMO_INGREDIENTS: list[dict] = [
     {
         "name": "tomato",
