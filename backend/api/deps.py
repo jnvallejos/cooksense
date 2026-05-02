@@ -3,11 +3,19 @@
 This module is the single integration point with cooksense-core (the private
 proprietary package) or its public stub. The try/except pattern allows the
 backend to run in either mode.
+
+Phase 2 introduces three new factories — `get_vision_extractor`,
+`get_personalized_describer`, `get_qa_responder` — that follow the same
+`lru_cache(maxsize=1)` shape as `get_translator`. In stub mode each one
+constructs the no-arg stub class; in proprietary mode they lazily build an
+`anthropic.Anthropic` client and forward the relevant `settings.anthropic_*`
+model name. `anthropic` stays an optional dependency for the stub install.
 """
 
 import logging
 from functools import lru_cache
 
+from infrastructure.config import settings
 from infrastructure.db.chroma_client import get_chroma_client
 from infrastructure.db.recipe_repository import RecipeRepository
 
@@ -16,14 +24,24 @@ logger = logging.getLogger(__name__)
 try:
     from cooksense_core import (  # type: ignore[import-not-found]
         IngredientReasoner,
+        PersonalizedDescriber,
+        QAResponder,
         RecipeRanker,
         Translator,
+        VisionExtractor,
     )
 
     logger.info("cooksense-core (proprietary) loaded")
     _CORE_MODE = "proprietary"
 except ImportError:
-    from stub import IngredientReasoner, RecipeRanker, Translator
+    from stub import (
+        IngredientReasoner,
+        PersonalizedDescriber,
+        QAResponder,
+        RecipeRanker,
+        Translator,
+        VisionExtractor,
+    )
 
     logger.info("cooksense-core-stub (public mock) loaded")
     _CORE_MODE = "stub"
@@ -62,6 +80,61 @@ def get_translator() -> Translator:
         logger.info("constructing proprietary Translator with Anthropic client")
         return Translator(client=anthropic.Anthropic())
     return Translator()
+
+
+@lru_cache(maxsize=1)
+def get_vision_extractor() -> VisionExtractor:
+    """Instantiate the active VisionExtractor (proprietary or stub).
+
+    Stub mode uses a no-arg constructor. Proprietary mode lazily builds an
+    Anthropic client and forwards `settings.anthropic_model_vision`.
+    """
+    if _CORE_MODE == "proprietary":
+        import anthropic
+
+        logger.info(
+            "constructing proprietary VisionExtractor (model=%s)",
+            settings.anthropic_model_vision,
+        )
+        return VisionExtractor(
+            client=anthropic.Anthropic(),
+            model=settings.anthropic_model_vision,
+        )
+    return VisionExtractor()
+
+
+@lru_cache(maxsize=1)
+def get_personalized_describer() -> PersonalizedDescriber:
+    """Instantiate the active PersonalizedDescriber (proprietary or stub)."""
+    if _CORE_MODE == "proprietary":
+        import anthropic
+
+        logger.info(
+            "constructing proprietary PersonalizedDescriber (model=%s)",
+            settings.anthropic_model_personalization,
+        )
+        return PersonalizedDescriber(
+            client=anthropic.Anthropic(),
+            model=settings.anthropic_model_personalization,
+        )
+    return PersonalizedDescriber()
+
+
+@lru_cache(maxsize=1)
+def get_qa_responder() -> QAResponder:
+    """Instantiate the active QAResponder (proprietary or stub)."""
+    if _CORE_MODE == "proprietary":
+        import anthropic
+
+        logger.info(
+            "constructing proprietary QAResponder (model=%s)",
+            settings.anthropic_model_qa,
+        )
+        return QAResponder(
+            client=anthropic.Anthropic(),
+            model=settings.anthropic_model_qa,
+        )
+    return QAResponder()
 
 
 @lru_cache(maxsize=1)
