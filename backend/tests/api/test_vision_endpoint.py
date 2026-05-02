@@ -95,3 +95,81 @@ def test_rejects_oversize_payload(client, headers):
         files={"image": ("huge.jpg", blob, "image/jpeg")},
     )
     assert response.status_code == 400
+
+
+# --- cache ---
+
+
+def test_second_call_with_same_image_returns_from_cache(client, headers, image_bytes):
+    first = client.post(
+        "/api/vision/extract-ingredients",
+        headers=headers,
+        files={"image": ("pantry.jpg", image_bytes, "image/jpeg")},
+    )
+    assert first.status_code == 200
+    first_body = first.json()
+    assert first_body["from_cache"] is False
+
+    second = client.post(
+        "/api/vision/extract-ingredients",
+        headers=headers,
+        files={"image": ("pantry.jpg", image_bytes, "image/jpeg")},
+    )
+
+    assert second.status_code == 200
+    second_body = second.json()
+    assert second_body["from_cache"] is True
+    assert second_body["image_hash"] == first_body["image_hash"]
+    assert second_body["ingredients"] == first_body["ingredients"]
+
+
+def test_distinct_images_yield_distinct_cache_entries(client, headers, image_bytes):
+    other = (FIXTURES / "fridge_well_lit.jpg").read_bytes()
+    first = client.post(
+        "/api/vision/extract-ingredients",
+        headers=headers,
+        files={"image": ("pantry.jpg", image_bytes, "image/jpeg")},
+    )
+    second = client.post(
+        "/api/vision/extract-ingredients",
+        headers=headers,
+        files={"image": ("fridge.jpg", other, "image/jpeg")},
+    )
+
+    assert first.json()["image_hash"] != second.json()["image_hash"]
+    assert second.json()["from_cache"] is False
+
+
+def test_cache_hit_does_not_invoke_extractor(client, headers, image_bytes, app):
+    """Once a hash is cached, the second request must not call the extractor again."""
+    from api.deps import get_vision_extractor
+
+    class CountingExtractor:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def extract(
+            self,
+            image_bytes: bytes,
+            language: str = "en",
+            max_tokens: int = 2048,
+        ) -> list[dict]:
+            self.calls += 1
+            return [
+                {
+                    "name": "tomato",
+                    "name_es": "tomate",
+                    "confidence": 0.9,
+                    "estimated_quantity": "1",
+                    "category": "vegetable",
+                }
+            ]
+
+    counting = CountingExtractor()
+    app.dependency_overrides[get_vision_extractor] = lambda: counting
+
+    files = {"image": ("pantry.jpg", image_bytes, "image/jpeg")}
+    client.post("/api/vision/extract-ingredients", headers=headers, files=files)
+    client.post("/api/vision/extract-ingredients", headers=headers, files=files)
+
+    assert counting.calls == 1
