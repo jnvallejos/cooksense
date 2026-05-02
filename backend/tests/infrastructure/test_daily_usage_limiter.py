@@ -10,11 +10,11 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 import pytest
-from infrastructure.storage.daily_usage import DailyUsageLimiter, RateLimitExceeded
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from infrastructure.storage.daily_usage import DailyUsageLimiter, RateLimitExceeded
 from infrastructure.storage.models import Base, UserDailyUsage
 
 USER = "11111111-1111-1111-1111-111111111111"

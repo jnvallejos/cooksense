@@ -59,7 +59,8 @@ def test_get_returns_none_after_ttl_expires(session):
     cache.set("k1", kind="vision", payload={"x": 1}, ttl_seconds=3600)
 
     # Force expiry by rewriting `expires_at` into the past.
-    entry = session.execute(select(LLMCacheEntry).where(LLMCacheEntry.cache_key == "k1")).scalar_one()
+    stmt = select(LLMCacheEntry).where(LLMCacheEntry.cache_key == "k1")
+    entry = session.execute(stmt).scalar_one()
     entry.expires_at = datetime.now(UTC) - timedelta(seconds=1)
     session.commit()
 
@@ -69,7 +70,8 @@ def test_get_returns_none_after_ttl_expires(session):
 def test_get_lazy_deletes_expired_row(session):
     cache = LLMCache(session)
     cache.set("k1", kind="vision", payload={"x": 1}, ttl_seconds=3600)
-    entry = session.execute(select(LLMCacheEntry).where(LLMCacheEntry.cache_key == "k1")).scalar_one()
+    stmt = select(LLMCacheEntry).where(LLMCacheEntry.cache_key == "k1")
+    entry = session.execute(stmt).scalar_one()
     entry.expires_at = datetime.now(UTC) - timedelta(seconds=1)
     session.commit()
 
@@ -86,7 +88,8 @@ def test_get_increments_access_count(session):
     cache.get("k1")
     cache.get("k1")
 
-    entry = session.execute(select(LLMCacheEntry).where(LLMCacheEntry.cache_key == "k1")).scalar_one()
+    stmt = select(LLMCacheEntry).where(LLMCacheEntry.cache_key == "k1")
+    entry = session.execute(stmt).scalar_one()
     assert entry.access_count == 2
 
 
