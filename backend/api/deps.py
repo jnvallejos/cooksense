@@ -6,6 +6,10 @@ backend to run in either mode.
 """
 
 import logging
+from functools import lru_cache
+
+from infrastructure.db.chroma_client import get_chroma_client
+from infrastructure.db.recipe_repository import RecipeRepository
 
 logger = logging.getLogger(__name__)
 
@@ -34,3 +38,15 @@ def get_recipe_ranker() -> RecipeRanker:
 def get_ingredient_reasoner() -> IngredientReasoner:
     """Instantiate the active IngredientReasoner (proprietary or stub)."""
     return IngredientReasoner()
+
+
+@lru_cache(maxsize=1)
+def get_recipe_repository() -> RecipeRepository:
+    """Return the process-wide `RecipeRepository`.
+
+    The repository owns a sentence-transformers model and a ChromaDB client.
+    Both are expensive to construct, so we cache a single instance for the
+    lifetime of the process. Tests replace this dependency via FastAPI's
+    `app.dependency_overrides`.
+    """
+    return RecipeRepository(client=get_chroma_client())

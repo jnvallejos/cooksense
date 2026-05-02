@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 
-from api.routes import healthz, profile
+from api.routes import healthz, profile, recipes
 
 
 def create_app() -> FastAPI:
@@ -13,6 +13,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(healthz.router)
     app.include_router(profile.router)
+    app.include_router(recipes.router)
     return app
 
 
