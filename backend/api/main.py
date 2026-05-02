@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from api.routes import healthz, profile, recipes
+from api.routes import healthz, profile, recipes, vision
 from infrastructure.storage.postgres import init_db
 
 logger = logging.getLogger(__name__)
@@ -31,6 +31,7 @@ def create_app() -> FastAPI:
     app.include_router(healthz.router)
     app.include_router(profile.router)
     app.include_router(recipes.router)
+    app.include_router(vision.router)
     return app
 
 
