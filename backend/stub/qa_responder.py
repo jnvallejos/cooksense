@@ -13,8 +13,7 @@ class QAResponder:
 
     DEMO_EN = "This is a demo answer. Connect cooksense-core for real responses."
     DEMO_ES = (
-        "Esta es una respuesta de demostración. "
-        "Conectá cooksense-core para respuestas reales."
+        "Esta es una respuesta de demostración. Conectá cooksense-core para respuestas reales."
     )
 
     def __init__(self, client: object | None = None, model: str = "stub") -> None:

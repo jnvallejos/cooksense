@@ -34,6 +34,4 @@ class IngredientReasoner:
         The stub does not touch synonyms or plurals — that's the real
         reasoner's job. Input is not mutated.
         """
-        return [
-            {**item, "category": item.get("category") or "other"} for item in detected
-        ]
+        return [{**item, "category": item.get("category") or "other"} for item in detected]

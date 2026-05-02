@@ -168,10 +168,7 @@ def search_recipes(
     top_n = min(settings.personalize_top_n_recipes, len(selected))
     descriptions = _personalize(selected[:top_n], profile, describer, LLMCache(session))
 
-    recipes = [
-        _to_recipe(c, payload.ingredients, descriptions.get(c["id"]))
-        for c in selected
-    ]
+    recipes = [_to_recipe(c, payload.ingredients, descriptions.get(c["id"])) for c in selected]
 
     return RecipeSearchResponse(
         recipes=recipes,

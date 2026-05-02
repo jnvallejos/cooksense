@@ -53,9 +53,7 @@ class DailyUsageLimiter:
 
         current = getattr(row, column)
         if current >= limit:
-            raise RateLimitExceeded(
-                f"user {user_id} reached daily {kind} limit ({limit})"
-            )
+            raise RateLimitExceeded(f"user {user_id} reached daily {kind} limit ({limit})")
 
         setattr(row, column, current + 1)
         self._session.commit()

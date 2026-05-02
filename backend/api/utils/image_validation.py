@@ -76,16 +76,14 @@ def validate_image_upload(file: UploadFile, settings: Settings) -> bytes:
         raise HTTPException(
             status_code=400,
             detail=(
-                f"image dimension too small: {width}x{height} "
-                f"(min {settings.image_min_dimension})"
+                f"image dimension too small: {width}x{height} (min {settings.image_min_dimension})"
             ),
         )
     if largest > settings.image_max_dimension:
         raise HTTPException(
             status_code=400,
             detail=(
-                f"image dimension too large: {width}x{height} "
-                f"(max {settings.image_max_dimension})"
+                f"image dimension too large: {width}x{height} (max {settings.image_max_dimension})"
             ),
         )
 

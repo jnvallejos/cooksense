@@ -184,10 +184,7 @@ def test_ask_truncates_long_history_to_config_max(client, headers, recipe_repo, 
     responder = _RecordingResponder()
     app.dependency_overrides[get_qa_responder] = lambda: responder
 
-    long_history = [
-        {"question": f"q{i}", "answer": f"a{i}"}
-        for i in range(8)
-    ]
+    long_history = [{"question": f"q{i}", "answer": f"a{i}"} for i in range(8)]
     response = client.post(
         "/api/recipes/r001/ask",
         json={"question": "now what?", "previous_questions": long_history},
@@ -202,9 +199,7 @@ def test_ask_truncates_long_history_to_config_max(client, headers, recipe_repo, 
     assert [item["question"] for item in forwarded] == ["q3", "q4", "q5", "q6", "q7"]
 
 
-def test_ask_truncation_respects_config_override(
-    client, headers, recipe_repo, app, monkeypatch
-):
+def test_ask_truncation_respects_config_override(client, headers, recipe_repo, app, monkeypatch):
     from infrastructure import config as config_module
 
     monkeypatch.setattr(config_module.settings, "qa_max_previous_questions", 2)
