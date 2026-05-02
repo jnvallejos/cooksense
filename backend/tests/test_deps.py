@@ -1,7 +1,8 @@
 """Tests for the dependency wiring (open core import logic)."""
 
-from api.deps import get_core_mode, get_recipe_ranker, get_ingredient_reasoner
-from stub import RecipeRanker as StubRanker, IngredientReasoner as StubReasoner
+from api.deps import get_core_mode, get_ingredient_reasoner, get_recipe_ranker
+from stub import IngredientReasoner as StubReasoner
+from stub import RecipeRanker as StubRanker
 
 
 def test_core_mode_is_stub_when_proprietary_not_installed():

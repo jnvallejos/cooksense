@@ -10,11 +10,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    from cooksense_core import RecipeRanker, IngredientReasoner  # type: ignore[import-not-found]
+    from cooksense_core import IngredientReasoner, RecipeRanker  # type: ignore[import-not-found]
+
     logger.info("cooksense-core (proprietary) loaded")
     _CORE_MODE = "proprietary"
 except ImportError:
-    from stub import RecipeRanker, IngredientReasoner
+    from stub import IngredientReasoner, RecipeRanker
+
     logger.info("cooksense-core-stub (public mock) loaded")
     _CORE_MODE = "stub"
 
