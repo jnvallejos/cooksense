@@ -1,0 +1,69 @@
+# Secrets
+*.env
+*.env.local
+secrets.toml
+*.pem
+*.key
+local.properties
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+*.egg
+dist/
+build/
+
+# Kotlin / Android
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+.idea/
+*.iml
+proguard/
+
+# iOS (forward-looking)
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+Pods/
+*.xcuserstate
+
+# CookSense-specific
+backend/data/
+backend/.chroma/
+backend/recipes/
+android/app/release/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# CookSense Claude rules (local-only)
+CLAUDE.md
+
+# Internal project docs (never commit)
+javier-profile.md
+cooksense-profile.md
+project-instructions.md
