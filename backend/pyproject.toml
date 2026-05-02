@@ -46,7 +46,9 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "C4", "UP", "ANN"]
-ignore = ["ANN101", "ANN102"]  # missing type for self/cls
+# ANN101/ANN102: removed in newer ruff (no-op kept for older toolchains).
+# B008: FastAPI uses `Depends()` in default args by convention.
+ignore = ["ANN101", "ANN102", "B008"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ANN"]

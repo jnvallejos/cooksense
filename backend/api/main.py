@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 
-from api.routes import healthz
+from api.routes import healthz, profile
 
 
 def create_app() -> FastAPI:
@@ -12,6 +12,7 @@ def create_app() -> FastAPI:
         description="Mobile-first recipe assistant powered by vision and RAG.",
     )
     app.include_router(healthz.router)
+    app.include_router(profile.router)
     return app
 
 

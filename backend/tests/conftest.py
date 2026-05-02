@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from api.main import create_app
 from infrastructure.storage.models import Base
@@ -16,8 +17,16 @@ from infrastructure.storage.postgres import get_session
 
 @pytest.fixture
 def sqlite_engine():
-    """Per-test in-memory SQLite engine. Tables are created on entry."""
-    engine = create_engine("sqlite:///:memory:")
+    """Per-test in-memory SQLite engine. Tables are created on entry.
+
+    We use `StaticPool` so the same connection is reused across sessions —
+    `sqlite:///:memory:` otherwise gives each connection a fresh empty DB.
+    """
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
     Base.metadata.create_all(engine)
     return engine
 
