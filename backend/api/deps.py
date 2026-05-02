@@ -44,8 +44,23 @@ def get_ingredient_reasoner() -> IngredientReasoner:
     return IngredientReasoner()
 
 
+@lru_cache(maxsize=1)
 def get_translator() -> Translator:
-    """Instantiate the active Translator (proprietary or stub)."""
+    """Instantiate the active Translator (proprietary or stub).
+
+    The public stub takes no constructor args. The proprietary
+    `cooksense_core.Translator` requires an `anthropic.Anthropic` client; we
+    build one lazily here so `anthropic` stays an optional runtime dependency
+    of the stub install. The Anthropic client reads `ANTHROPIC_API_KEY` from
+    the environment and raises if it is missing — we let that error propagate
+    so misconfiguration fails loudly at first use instead of producing a
+    half-broken object.
+    """
+    if _CORE_MODE == "proprietary":
+        import anthropic  # local: not required for stub installs
+
+        logger.info("constructing proprietary Translator with Anthropic client")
+        return Translator(client=anthropic.Anthropic())
     return Translator()
 
 
