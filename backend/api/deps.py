@@ -14,12 +14,16 @@ from infrastructure.db.recipe_repository import RecipeRepository
 logger = logging.getLogger(__name__)
 
 try:
-    from cooksense_core import IngredientReasoner, RecipeRanker  # type: ignore[import-not-found]
+    from cooksense_core import (  # type: ignore[import-not-found]
+        IngredientReasoner,
+        RecipeRanker,
+        Translator,
+    )
 
     logger.info("cooksense-core (proprietary) loaded")
     _CORE_MODE = "proprietary"
 except ImportError:
-    from stub import IngredientReasoner, RecipeRanker
+    from stub import IngredientReasoner, RecipeRanker, Translator
 
     logger.info("cooksense-core-stub (public mock) loaded")
     _CORE_MODE = "stub"
@@ -38,6 +42,11 @@ def get_recipe_ranker() -> RecipeRanker:
 def get_ingredient_reasoner() -> IngredientReasoner:
     """Instantiate the active IngredientReasoner (proprietary or stub)."""
     return IngredientReasoner()
+
+
+def get_translator() -> Translator:
+    """Instantiate the active Translator (proprietary or stub)."""
+    return Translator()
 
 
 @lru_cache(maxsize=1)
