@@ -6,7 +6,7 @@ reads the current user's profile. Both endpoints require a valid UUID header.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from api.middleware.user_id import require_user_id
@@ -52,4 +52,17 @@ def upsert_profile(
     existed = repo.get(user_id) is not None
     profile = repo.upsert(user_id, payload.model_dump())
     response.status_code = status.HTTP_200_OK if existed else status.HTTP_201_CREATED
+    return _to_response(profile)
+
+
+@router.get("/me", response_model=ProfileResponse)
+def get_my_profile(
+    user_id: str = Depends(require_user_id),
+    session: Session = Depends(get_session),
+) -> ProfileResponse:
+    """Return the profile for the user identified by `X-User-Id`."""
+    repo = ProfileRepository(session)
+    profile = repo.get(user_id)
+    if profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
     return _to_response(profile)
