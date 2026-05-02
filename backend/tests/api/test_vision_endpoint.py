@@ -173,3 +173,58 @@ def test_cache_hit_does_not_invoke_extractor(client, headers, image_bytes, app):
     client.post("/api/vision/extract-ingredients", headers=headers, files=files)
 
     assert counting.calls == 1
+
+
+# --- rate limit ---
+
+
+def _unique_image_bytes(seed: int) -> bytes:
+    """Return distinct valid JPEG bytes per seed so each call misses the cache."""
+    buf = io.BytesIO()
+    color = (seed % 255, (seed * 7) % 255, (seed * 13) % 255)
+    Image.new("RGB", (300, 300), color).save(buf, "JPEG", quality=80)
+    return buf.getvalue()
+
+
+def test_remaining_calls_today_decrements_per_call(client, headers):
+    first = client.post(
+        "/api/vision/extract-ingredients",
+        headers=headers,
+        files={"image": ("a.jpg", _unique_image_bytes(1), "image/jpeg")},
+    )
+    second = client.post(
+        "/api/vision/extract-ingredients",
+        headers=headers,
+        files={"image": ("b.jpg", _unique_image_bytes(2), "image/jpeg")},
+    )
+
+    assert first.json()["remaining_calls_today"] == 4
+    assert second.json()["remaining_calls_today"] == 3
+
+
+def test_returns_429_after_daily_limit_exceeded(client, headers):
+    for i in range(5):
+        response = client.post(
+            "/api/vision/extract-ingredients",
+            headers=headers,
+            files={"image": (f"img{i}.jpg", _unique_image_bytes(i), "image/jpeg")},
+        )
+        assert response.status_code == 200
+
+    response = client.post(
+        "/api/vision/extract-ingredients",
+        headers=headers,
+        files={"image": ("over.jpg", _unique_image_bytes(99), "image/jpeg")},
+    )
+    assert response.status_code == 429
+
+
+def test_cache_hit_does_not_consume_quota(client, headers, image_bytes):
+    files = {"image": ("pantry.jpg", image_bytes, "image/jpeg")}
+    first = client.post("/api/vision/extract-ingredients", headers=headers, files=files)
+    second = client.post("/api/vision/extract-ingredients", headers=headers, files=files)
+
+    assert first.json()["from_cache"] is False
+    assert second.json()["from_cache"] is True
+    # Same number remaining: cache hit must not increment usage.
+    assert second.json()["remaining_calls_today"] == first.json()["remaining_calls_today"]
