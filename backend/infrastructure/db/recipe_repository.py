@@ -88,6 +88,19 @@ class RecipeRepository:
     def count(self) -> int:
         return self._collection.count()
 
+    def get_by_id(self, recipe_id: str) -> dict | None:
+        """Return a single recipe by id, or None when missing.
+
+        Used by the conversational follow-up endpoint, which needs a recipe
+        lookup that does not depend on ingredient similarity.
+        """
+        result = self._collection.get(ids=[recipe_id])
+        ids = result.get("ids") or []
+        metadatas = result.get("metadatas") or []
+        if not ids:
+            return None
+        return self._metadata_to_recipe(ids[0], metadatas[0] if metadatas else {})
+
     def clear(self) -> None:
         """Test helper: remove all recipes from the collection."""
         self._client.delete_collection(self._collection_name)

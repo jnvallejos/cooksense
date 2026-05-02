@@ -24,16 +24,20 @@ uvicorn api.main:app --reload
 
 The API runs on http://localhost:8000. Healthz at `/api/healthz`. OpenAPI docs at `/docs`.
 
-## Endpoints (Phase 1)
+## Endpoints
 
 All endpoints except `/api/healthz` require an `X-User-Id` header containing a UUID v4. Clients (Android, web) generate the UUID on first launch and persist it locally — there is no auth bootstrap.
 
 - `GET  /api/healthz` — liveness probe.
 - `POST /api/profile` — upsert the profile for the current user. Returns 201 on create, 200 on update.
 - `GET  /api/profile/me` — read the current user's profile, or 404 if it does not exist.
-- `POST /api/recipes/search` — search recipes by ingredients. Body: `{"ingredients": [...], "limit": 5}`. Returns `RecipeSearchResponse` with ranked candidates, `total_found`, and a `query_id`.
+- `POST /api/recipes/search` — search recipes by ingredients. Body: `{"ingredients": [...], "limit": 5}`. Returns `RecipeSearchResponse` with ranked candidates, `total_found`, `query_id`, and a `personalized_description` on the top `personalize_top_n_recipes` results.
+- `POST /api/vision/extract-ingredients` — multipart upload (`image` field). Returns the detected ingredients, the SHA-256 image hash, `from_cache`, and `remaining_calls_today`. Daily quota: `rate_limit_vision_per_day`.
+- `POST /api/recipes/{recipe_id}/ask` — conversational follow-up. Body: `{"question": "...", "previous_questions": [...]}`. Server caps history to `qa_max_previous_questions`. Daily quota: `rate_limit_qa_per_day`.
 
-The search endpoint reads the user's profile (defaults are used if missing), queries ChromaDB for the top 20 candidates, and runs them through `RecipeRanker.rank` before returning the top `limit`. Stub ranker preserves order and assigns `score=1.0`; the real ranker in `cooksense-core` scores by ingredient overlap, skill match, dietary compliance, and time alignment.
+The search endpoint reads the user's profile (defaults are used if missing), queries ChromaDB for the top 20 candidates, runs them through `RecipeRanker.rank`, and personalizes the top-N via `PersonalizedDescriber`. The vision endpoint hashes uploaded images, caches results in `LLMCache` for `cache_ttl_vision_seconds`, and never persists the bytes. The ask endpoint keys the response cache by `(recipe_id, question_hash, history_hash, language)`.
+
+Every model name, cap, TTL, and daily limit is config-driven (`infrastructure/config.py`); endpoints never hardcode tunables. Phase 5 will override defaults via Fly.io secrets.
 
 ## Recipe corpus ingestion
 
