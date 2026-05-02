@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cooksense-backend"
+version = "0.1.0"
+description = "CookSense backend API"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.0",
+    "httpx>=0.27.0",
+    "structlog>=24.4.0",
+    "python-multipart>=0.0.12",
+]
+
+[project.optional-dependencies]
+stub = []  # The stub is part of the backend package itself
+core = ["cooksense-core @ git+ssh://git@github.com/jnvallejos/cooksense-core.git@main"]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.7.0",
+    "httpx>=0.27.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["api*", "infrastructure*", "stub*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "C4", "UP", "ANN"]
+ignore = ["ANN101", "ANN102"]  # missing type for self/cls
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
