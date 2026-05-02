@@ -10,5 +10,6 @@ this stub. See backend/api/deps.py for the import logic.
 
 from .ranker import RecipeRanker
 from .reasoner import IngredientReasoner
+from .translator import Translator
 
-__all__ = ["RecipeRanker", "IngredientReasoner"]
+__all__ = ["IngredientReasoner", "RecipeRanker", "Translator"]
