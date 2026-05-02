@@ -17,22 +17,27 @@ import hashlib
 import json
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from api.deps import (
     PersonalizedDescriber,
+    QAResponder,
     RecipeRanker,
     get_personalized_describer,
+    get_qa_responder,
     get_recipe_ranker,
     get_recipe_repository,
 )
 from api.middleware.user_id import require_user_id
+from api.models.qa import RecipeAnswerResponse, RecipeQuestionRequest
 from api.models.recipe import Recipe
 from api.models.search import RecipeSearchRequest, RecipeSearchResponse
 from infrastructure.config import settings
 from infrastructure.db.recipe_repository import RecipeRepository
+from infrastructure.storage.daily_usage import DailyUsageLimiter, RateLimitExceeded
 from infrastructure.storage.llm_cache import LLMCache
+from infrastructure.storage.models import UserDailyUsage
 from infrastructure.storage.postgres import get_session
 from infrastructure.storage.profile_repository import ProfileRepository
 
@@ -172,4 +177,104 @@ def search_recipes(
         recipes=recipes,
         total_found=len(candidates),
         query_id=str(uuid4()),
+    )
+
+
+def _qa_calls_today(session: Session, user_id: str) -> int:
+    from datetime import date
+
+    row = session.get(UserDailyUsage, (user_id, date.today()))
+    return row.qa_calls if row is not None else 0
+
+
+def _hash_question(question: str) -> str:
+    return hashlib.sha256(question.lower().strip().encode("utf-8")).hexdigest()
+
+
+def _hash_previous_questions(items: list[dict]) -> str:
+    canonical = json.dumps(
+        [{"q": item["question"], "a": item["answer"]} for item in items],
+        sort_keys=False,
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+@router.post("/{recipe_id}/ask", response_model=RecipeAnswerResponse)
+def ask_recipe_question(
+    recipe_id: str,
+    payload: RecipeQuestionRequest,
+    user_id: str = Depends(require_user_id),
+    session: Session = Depends(get_session),
+    repo: RecipeRepository = Depends(get_recipe_repository),
+    responder: QAResponder = Depends(get_qa_responder),
+) -> RecipeAnswerResponse:
+    """Conversational follow-up on a recipe.
+
+    Loads the recipe (404 on miss), truncates `previous_questions` to
+    `qa_max_previous_questions`, hits the response cache keyed by
+    (recipe, question, history), and otherwise consumes one slot of the user's
+    daily QA quota before invoking the responder.
+    """
+    recipe = repo.get_by_id(recipe_id)
+    if recipe is None:
+        raise HTTPException(status_code=404, detail=f"recipe {recipe_id!r} not found")
+
+    history_cap = settings.qa_max_previous_questions
+    truncated_history = [
+        {"question": item.question, "answer": item.answer}
+        for item in payload.previous_questions[-history_cap:]
+    ]
+
+    profile = _resolve_profile(session, user_id)
+    language = profile["language"]
+
+    cache = LLMCache(session)
+    cache_key = cache.make_key(
+        "qa",
+        recipe_id,
+        _hash_question(payload.question),
+        _hash_previous_questions(truncated_history),
+        language,
+    )
+
+    cached = cache.get(cache_key)
+    if cached is not None:
+        remaining = max(
+            settings.rate_limit_qa_per_day - _qa_calls_today(session, user_id),
+            0,
+        )
+        return RecipeAnswerResponse(
+            answer=cached["answer"],
+            from_cache=True,
+            remaining_questions_today=remaining,
+        )
+
+    limiter = DailyUsageLimiter(session)
+    try:
+        remaining = limiter.check_and_increment(
+            user_id, kind="qa", limit=settings.rate_limit_qa_per_day
+        )
+    except RateLimitExceeded as exc:
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
+
+    answer = responder.answer(
+        recipe,
+        payload.question,
+        truncated_history,
+        language=language,
+        max_tokens=settings.anthropic_max_tokens_qa,
+    )
+
+    cache.set(
+        cache_key,
+        kind="qa",
+        payload={"answer": answer},
+        ttl_seconds=settings.cache_ttl_qa_seconds,
+    )
+
+    return RecipeAnswerResponse(
+        answer=answer,
+        from_cache=False,
+        remaining_questions_today=remaining,
     )
