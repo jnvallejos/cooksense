@@ -80,6 +80,7 @@ tasks.withType<Test>().configureEach {
 detekt {
     buildUponDefaultConfig = true
     allRules = false
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
 }
 
 ktlint {
