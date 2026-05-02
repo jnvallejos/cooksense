@@ -14,12 +14,17 @@ The pipeline only depends on the `translate_batch(recipes) -> dict` contract.
 
 from __future__ import annotations
 
+import json
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Protocol
 
 
 class _TranslatorLike(Protocol):
     def translate_batch(self, recipes: list[dict]) -> dict[str, dict]: ...
+
+
+_TRANSLATED_FIELDS = ("title_es", "ingredients_es", "instructions_es")
 
 
 class TranslationPipeline:
@@ -35,4 +40,39 @@ class TranslationPipeline:
         Cache hits are read from disk; misses are forwarded to the translator and
         the result is written to disk. Resumable across crashes.
         """
-        raise NotImplementedError
+        self._cache_dir.mkdir(parents=True, exist_ok=True)
+
+        results: dict[str, dict] = {}
+        misses: list[dict] = []
+        for recipe in recipes:
+            cached = self._read_cache(recipe["id"])
+            if cached is not None:
+                results[recipe["id"]] = cached
+            else:
+                misses.append(recipe)
+
+        if misses:
+            translated = self._translator.translate_batch(misses)
+            for rid, fields in translated.items():
+                self._write_cache(rid, fields)
+                results[rid] = {k: fields[k] for k in _TRANSLATED_FIELDS}
+
+        return results
+
+    def _cache_path(self, recipe_id: str) -> Path:
+        return self._cache_dir / f"{recipe_id}.json"
+
+    def _read_cache(self, recipe_id: str) -> dict | None:
+        path = self._cache_path(recipe_id)
+        if not path.exists():
+            return None
+        payload = json.loads(path.read_text())
+        return {k: payload[k] for k in _TRANSLATED_FIELDS}
+
+    def _write_cache(self, recipe_id: str, fields: dict) -> None:
+        payload = {
+            "recipe_id": recipe_id,
+            **{k: fields[k] for k in _TRANSLATED_FIELDS},
+            "translated_at": datetime.now(UTC).isoformat(),
+        }
+        self._cache_path(recipe_id).write_text(json.dumps(payload, ensure_ascii=False, indent=2))
