@@ -123,3 +123,123 @@ def test_search_uses_profile_defaults_when_profile_missing(client, headers, fake
     """No profile written; endpoint should still respond 200 using defaults."""
     response = client.post("/api/recipes/search", json=VALID_PAYLOAD, headers=headers)
     assert response.status_code == 200
+
+
+# --- Ranker integration ---
+
+
+class _RecordingRanker:
+    """Captures the (recipes, profile, query_ingredients) triple of each call."""
+
+    def __init__(self, returns: list[dict] | None = None) -> None:
+        self.calls: list[dict] = []
+        self._returns = returns
+
+    def rank(
+        self,
+        recipes: list[dict],
+        profile: dict,
+        query_ingredients: list[str] | None = None,
+    ) -> list[dict]:
+        self.calls.append(
+            {
+                "recipes": recipes,
+                "profile": profile,
+                "query_ingredients": query_ingredients,
+            }
+        )
+        if self._returns is not None:
+            return self._returns
+        return [{**r, "score": 1.0} for r in recipes]
+
+
+@pytest.fixture
+def ranker(app) -> _RecordingRanker:
+    from api.deps import get_recipe_ranker
+
+    instance = _RecordingRanker()
+    app.dependency_overrides[get_recipe_ranker] = lambda: instance
+    return instance
+
+
+def test_search_invokes_ranker_with_query_ingredients(client, headers, fake_repo, ranker):
+    payload = {"ingredients": ["tomato", "basil"], "limit": 5}
+    client.post("/api/recipes/search", json=payload, headers=headers)
+
+    assert len(ranker.calls) == 1
+    assert ranker.calls[0]["query_ingredients"] == ["tomato", "basil"]
+
+
+def test_search_uses_profile_when_present(client, headers, fake_repo, ranker, user_id):
+    profile_payload = {
+        "cooking_for": "self",
+        "household_size": 1,
+        "dietary_restrictions": ["vegan"],
+        "fitness_goal": "none",
+        "cooking_skill": "pro",
+        "time_budget_minutes": 60,
+        "language": "en",
+    }
+    client.post("/api/profile", json=profile_payload, headers=headers)
+
+    client.post(
+        "/api/recipes/search",
+        json={"ingredients": ["tomato"], "limit": 5},
+        headers=headers,
+    )
+
+    assert len(ranker.calls) == 1
+    profile = ranker.calls[0]["profile"]
+    assert profile["cooking_skill"] == "pro"
+    assert profile["dietary_restrictions"] == ["vegan"]
+
+
+def test_search_uses_default_profile_when_missing(client, headers, fake_repo, ranker):
+    client.post(
+        "/api/recipes/search",
+        json={"ingredients": ["tomato"], "limit": 5},
+        headers=headers,
+    )
+
+    profile = ranker.calls[0]["profile"]
+    assert profile["cooking_skill"] == "intermediate"
+    assert profile["language"] == "en"
+    assert profile["dietary_restrictions"] == []
+
+
+def test_search_returns_recipes_in_ranker_order(client, headers, fake_repo, app):
+    """The endpoint preserves the ranker's output order rather than chroma's."""
+    from api.deps import get_recipe_ranker
+
+    reordered = [
+        {
+            "id": "second",
+            "title": "Second",
+            "ingredients": ["tomato"],
+            "instructions": ["go"],
+            "estimated_time_minutes": 20,
+            "estimated_skill": "beginner",
+            "score": 0.9,
+        },
+        {
+            "id": "first",
+            "title": "First",
+            "ingredients": ["tomato"],
+            "instructions": ["go"],
+            "estimated_time_minutes": 20,
+            "estimated_skill": "beginner",
+            "score": 1.0,
+        },
+    ]
+    ranker = _RecordingRanker(returns=reordered)
+    app.dependency_overrides[get_recipe_ranker] = lambda: ranker
+
+    response = client.post(
+        "/api/recipes/search",
+        json={"ingredients": ["tomato"], "limit": 5},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    ids = [r["id"] for r in response.json()["recipes"]]
+    assert ids == ["second", "first"]
