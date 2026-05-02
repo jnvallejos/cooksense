@@ -13,7 +13,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.deps import get_recipe_repository
+from api.deps import RecipeRanker, get_recipe_ranker, get_recipe_repository
 from api.middleware.user_id import require_user_id
 from api.models.recipe import Recipe
 from api.models.search import RecipeSearchRequest, RecipeSearchResponse
@@ -62,7 +62,7 @@ def _match_percentage(recipe: dict, query_ingredients: list[str]) -> float:
     return hits / len(ingredients)
 
 
-def _to_recipe(raw: dict, query_ingredients: list[str], score: float = 1.0) -> Recipe:
+def _to_recipe(raw: dict, query_ingredients: list[str]) -> Recipe:
     return Recipe(
         id=raw["id"],
         title=raw.get("title", ""),
@@ -74,7 +74,7 @@ def _to_recipe(raw: dict, query_ingredients: list[str], score: float = 1.0) -> R
         estimated_time_minutes=raw.get("estimated_time_minutes", 0),
         estimated_skill=raw.get("estimated_skill", "intermediate"),
         match_percentage=_match_percentage(raw, query_ingredients),
-        score=score,
+        score=raw.get("score", 1.0),
     )
 
 
@@ -84,12 +84,14 @@ def search_recipes(
     user_id: str = Depends(require_user_id),
     session: Session = Depends(get_session),
     repo: RecipeRepository = Depends(get_recipe_repository),
+    ranker: RecipeRanker = Depends(get_recipe_ranker),
 ) -> RecipeSearchResponse:
     """Return up to `payload.limit` recipes that match the requested ingredients."""
-    _resolve_profile(session, user_id)  # default profile is loaded for future ranking
+    profile = _resolve_profile(session, user_id)
 
     candidates = repo.query_by_ingredients(payload.ingredients, limit=20)
-    recipes = [_to_recipe(c, payload.ingredients) for c in candidates[: payload.limit]]
+    ranked = ranker.rank(candidates, profile, query_ingredients=payload.ingredients)
+    recipes = [_to_recipe(c, payload.ingredients) for c in ranked[: payload.limit]]
 
     return RecipeSearchResponse(
         recipes=recipes,
