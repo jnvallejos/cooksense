@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import pytest
 
-
 VALID_PAYLOAD = {
     "cooking_for": "self",
     "household_size": 1,

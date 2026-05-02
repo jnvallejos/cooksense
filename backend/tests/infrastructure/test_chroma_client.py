@@ -40,8 +40,9 @@ def test_get_chroma_client_uses_persistent_when_no_host(tmp_path):
     from infrastructure import config as config_module
 
     persist_path = tmp_path / "chroma"
-    with patch.object(config_module.settings, "chroma_host", ""), patch.object(
-        config_module.settings, "chroma_persist_dir", persist_path
+    with (
+        patch.object(config_module.settings, "chroma_host", ""),
+        patch.object(config_module.settings, "chroma_persist_dir", persist_path),
     ):
         client = get_chroma_client()
         # Persistent client materializes the directory.
@@ -57,9 +58,11 @@ def test_get_chroma_client_uses_http_when_host_set():
     """
     from infrastructure import config as config_module
 
-    with patch.object(config_module.settings, "chroma_host", "chroma.example.com"), patch.object(
-        config_module.settings, "chroma_api_key", "secret-token"
-    ), patch("infrastructure.db.chroma_client.chromadb.HttpClient") as http_ctor:
+    with (
+        patch.object(config_module.settings, "chroma_host", "chroma.example.com"),
+        patch.object(config_module.settings, "chroma_api_key", "secret-token"),
+        patch("infrastructure.db.chroma_client.chromadb.HttpClient") as http_ctor,
+    ):
         http_ctor.return_value = object()
         result = get_chroma_client()
         http_ctor.assert_called_once()

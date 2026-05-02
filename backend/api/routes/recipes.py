@@ -56,9 +56,7 @@ def _match_percentage(recipe: dict, query_ingredients: list[str]) -> float:
     if not ingredients:
         return 0.0
     query_lower = [i.lower() for i in query_ingredients]
-    hits = sum(
-        1 for item in ingredients if any(token in item.lower() for token in query_lower)
-    )
+    hits = sum(1 for item in ingredients if any(token in item.lower() for token in query_lower))
     return hits / len(ingredients)
 
 

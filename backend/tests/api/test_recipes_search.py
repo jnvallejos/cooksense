@@ -13,7 +13,6 @@ import pytest
 from api.deps import get_recipe_repository
 from api.models.recipe import Recipe
 
-
 VALID_PAYLOAD = {"ingredients": ["tomato", "basil"], "limit": 5}
 
 
