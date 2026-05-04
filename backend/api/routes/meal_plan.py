@@ -27,12 +27,15 @@ from sqlalchemy.orm import Session
 from api.deps import (
     IngredientReasoner,
     MealPlanner,
+    ShoppingListBuilder,
     get_ingredient_reasoner,
     get_meal_planner,
     get_recipe_repository,
+    get_shopping_list_builder,
 )
 from api.middleware.user_id import require_user_id
 from api.models.meal_plan import MealPlanRequest, MealPlanResponse
+from api.models.shopping import ShoppingItem, ShoppingListResponse
 from infrastructure.config import settings
 from infrastructure.db.recipe_repository import RecipeRepository
 from infrastructure.storage.daily_usage import DailyUsageLimiter, RateLimitExceeded
@@ -211,3 +214,45 @@ def generate_meal_plan(
         macro_alignment_score=response["macro_alignment_score"],
         from_cache=False,
     )
+
+
+@router.post("/{plan_id}/shopping", response_model=ShoppingListResponse)
+def generate_shopping_list(
+    plan_id: str,
+    user_id: str = Depends(require_user_id),  # noqa: ARG001 - validation only
+    session: Session = Depends(get_session),
+    builder: ShoppingListBuilder = Depends(get_shopping_list_builder),
+) -> ShoppingListResponse:
+    """Derive the shopping list for a persisted plan.
+
+    No caching here per spec section 4.2: derivation is fast, deterministic,
+    and the LLM cost is small (~USD 0.005 per list with Haiku).
+    """
+    plan_repo = MealPlanRepository(session)
+    plan = plan_repo.get_by_id(plan_id)
+    if plan is None:
+        raise HTTPException(status_code=404, detail=f"plan {plan_id!r} not found")
+
+    profile = _resolve_profile(session, plan.user_id)
+    attribution = _collect_ingredients(plan)
+    items = builder.build(
+        attribution,
+        profile=profile,
+        max_tokens=settings.anthropic_max_tokens_shopping,
+    )
+    shopping_items = [ShoppingItem(**item) for item in items]
+    return ShoppingListResponse(
+        plan_id=plan.plan_id,
+        items=shopping_items,
+        total_items=len(shopping_items),
+        language=plan.language,
+    )
+
+
+def _collect_ingredients(plan) -> dict[str, list[str]]:
+    attribution: dict[str, list[str]] = {}
+    for recipe in plan.recipes:
+        data = recipe.recipe_data or {}
+        for ingredient in data.get("ingredients") or data.get("ingredients_summary") or []:
+            attribution.setdefault(ingredient, []).append(recipe.recipe_id)
+    return attribution
