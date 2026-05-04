@@ -138,3 +138,57 @@ def test_get_returns_plan_with_recipes(session):
 def test_get_returns_none_for_missing_plan_id(session):
     repo = MealPlanRepository(session)
     assert repo.get_by_id("does-not-exist") is None
+
+
+def test_is_owner_returns_true_for_owning_user(session):
+    repo = MealPlanRepository(session)
+    repo.save(
+        plan_id=PLAN,
+        user_id=USER,
+        pantry=[],
+        days=1,
+        meals_per_day=["breakfast", "lunch", "dinner"],
+        language="en",
+        plan_payload=_plan_payload(),
+    )
+    assert repo.is_owner(PLAN, USER) is True
+
+
+def test_is_owner_returns_false_for_other_user(session):
+    repo = MealPlanRepository(session)
+    repo.save(
+        plan_id=PLAN,
+        user_id=USER,
+        pantry=[],
+        days=1,
+        meals_per_day=["breakfast", "lunch", "dinner"],
+        language="en",
+        plan_payload=_plan_payload(),
+    )
+    assert repo.is_owner(PLAN, OTHER) is False
+
+
+def test_is_owner_returns_false_for_missing_plan(session):
+    repo = MealPlanRepository(session)
+    assert repo.is_owner("nope", USER) is False
+
+
+def test_cascade_delete_recipes_when_plan_deleted(session):
+    repo = MealPlanRepository(session)
+    repo.save(
+        plan_id=PLAN,
+        user_id=USER,
+        pantry=[],
+        days=1,
+        meals_per_day=["breakfast", "lunch", "dinner"],
+        language="en",
+        plan_payload=_plan_payload(),
+    )
+
+    plan = repo.get_by_id(PLAN)
+    assert plan is not None
+    session.delete(plan)
+    session.commit()
+
+    assert session.execute(select(MealPlan)).first() is None
+    assert session.execute(select(MealPlanRecipe)).first() is None
