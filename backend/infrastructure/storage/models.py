@@ -71,6 +71,7 @@ class UserDailyUsage(Base):
     usage_date: Mapped[date] = mapped_column(Date, primary_key=True)
     vision_calls: Mapped[int] = mapped_column(default=0)
     qa_calls: Mapped[int] = mapped_column(default=0)
+    plan_calls: Mapped[int] = mapped_column(default=0)
 
 
 class MealPlan(Base):

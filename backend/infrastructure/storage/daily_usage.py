@@ -21,8 +21,12 @@ from sqlalchemy.orm import Session
 
 from infrastructure.storage.models import UserDailyUsage
 
-UsageKind = Literal["vision", "qa"]
-_KIND_TO_COLUMN: dict[str, str] = {"vision": "vision_calls", "qa": "qa_calls"}
+UsageKind = Literal["vision", "qa", "plan"]
+_KIND_TO_COLUMN: dict[str, str] = {
+    "vision": "vision_calls",
+    "qa": "qa_calls",
+    "plan": "plan_calls",
+}
 
 
 class RateLimitExceeded(Exception):
@@ -38,7 +42,7 @@ class DailyUsageLimiter:
 
         Raises:
             RateLimitExceeded: when current_count >= limit before incrementing.
-            ValueError: when `kind` is not one of `vision` or `qa`.
+            ValueError: when `kind` is not one of `vision`, `qa`, or `plan`.
         """
         column = _KIND_TO_COLUMN.get(kind)
         if column is None:
