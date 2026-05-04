@@ -16,6 +16,8 @@ hardcode tunables.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -33,6 +35,7 @@ from api.middleware.user_id import require_user_id
 from api.models.meal_plan import MealPlanRequest, MealPlanResponse
 from infrastructure.config import settings
 from infrastructure.db.recipe_repository import RecipeRepository
+from infrastructure.storage.llm_cache import LLMCache
 from infrastructure.storage.meal_plan_repository import MealPlanRepository
 from infrastructure.storage.postgres import get_session
 from infrastructure.storage.profile_repository import ProfileRepository
@@ -68,6 +71,30 @@ def _resolve_profile(session: Session, user_id: str) -> dict:
 
 def _canonical_meals_per_day() -> list[str]:
     return [s.strip() for s in settings.meal_plan_meals_per_day.split(",") if s.strip()]
+
+
+def meal_plan_signature(profile: dict) -> str:
+    """SHA-256 over the profile fields that influence meal plan generation.
+
+    Extends the search/personalization signature (`cooking_skill`,
+    `time_budget_minutes`, `dietary_restrictions`, `language`) with
+    `household_size` and `fitness_goal`, which the planner consumes when
+    arranging meals.
+    """
+    canonical = {
+        "skill": profile.get("cooking_skill"),
+        "time_budget_minutes": profile.get("time_budget_minutes"),
+        "dietary_restrictions": sorted(profile.get("dietary_restrictions") or []),
+        "language": profile.get("language"),
+        "household_size": profile.get("household_size"),
+        "fitness_goal": profile.get("fitness_goal"),
+    }
+    blob = json.dumps(canonical, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def _canonical_ingredients(ingredients: list[str]) -> str:
+    return "|".join(sorted(i.lower().strip() for i in ingredients if i and i.strip()))
 
 
 def _normalize_ingredients(
@@ -107,6 +134,29 @@ def generate_meal_plan(
         )
 
     profile = _resolve_profile(session, user_id)
+    plan_repo = MealPlanRepository(session)
+    cache = LLMCache(session)
+    cache_key = cache.make_key(
+        "meal_plan", _canonical_ingredients(payload.ingredients), meal_plan_signature(profile)
+    )
+
+    cached = cache.get(cache_key)
+    if cached is not None:
+        cached_plan = plan_repo.get_by_id(cached["plan_id"])
+        if cached_plan is not None:
+            response = plan_repo.to_response_dict(cached_plan)
+            return MealPlanResponse(
+                plan_id=response["plan_id"],
+                user_id=response["user_id"],
+                language=response["language"],
+                created_at=response["created_at"] or datetime.now(UTC),
+                days=response["days"],
+                ingredient_reuse_score=response["ingredient_reuse_score"],
+                variety_score=response["variety_score"],
+                macro_alignment_score=response["macro_alignment_score"],
+                from_cache=True,
+            )
+
     norm_ingredients = _normalize_ingredients(
         payload.ingredients, reasoner, profile["language"]
     )
@@ -124,7 +174,6 @@ def generate_meal_plan(
     )
 
     plan_id = str(uuid4())
-    plan_repo = MealPlanRepository(session)
     saved = plan_repo.save(
         plan_id=plan_id,
         user_id=user_id,
@@ -133,6 +182,12 @@ def generate_meal_plan(
         meals_per_day=list(payload.meals_per_day),
         language=profile["language"],
         plan_payload=plan,
+    )
+    cache.set(
+        cache_key,
+        kind="meal_plan",
+        payload={"plan_id": plan_id},
+        ttl_seconds=settings.cache_ttl_meal_plan_seconds,
     )
 
     response = plan_repo.to_response_dict(saved)
