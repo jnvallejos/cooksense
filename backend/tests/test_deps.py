@@ -12,16 +12,20 @@ from api import deps as api_deps
 from api.deps import (
     get_core_mode,
     get_ingredient_reasoner,
+    get_meal_planner,
     get_personalized_describer,
     get_qa_responder,
     get_recipe_ranker,
+    get_shopping_list_builder,
     get_translator,
     get_vision_extractor,
 )
 from stub import IngredientReasoner as StubReasoner
+from stub import MealPlanner as StubPlanner
 from stub import PersonalizedDescriber as StubDescriber
 from stub import QAResponder as StubResponder
 from stub import RecipeRanker as StubRanker
+from stub import ShoppingListBuilder as StubShopping
 from stub import Translator as StubTranslator
 from stub import VisionExtractor as StubVision
 
@@ -64,6 +68,8 @@ _CACHED_FACTORIES = (
     "get_vision_extractor",
     "get_personalized_describer",
     "get_qa_responder",
+    "get_meal_planner",
+    "get_shopping_list_builder",
 )
 
 
@@ -247,3 +253,66 @@ def test_get_qa_responder_forwards_qa_model(monkeypatch):
     assert isinstance(instance, FakeResponder)
     assert received["client"] is fake_client
     assert received["model"] == "claude-sonnet-qa-test"
+
+
+# ---------------------------------------------------------------------------
+# Phase 3: get_meal_planner / get_shopping_list_builder
+# ---------------------------------------------------------------------------
+
+
+def test_get_meal_planner_returns_stub_in_stub_mode():
+    if get_core_mode() != "stub":
+        pytest.skip("requires stub mode")
+
+    planner = get_meal_planner()
+    assert isinstance(planner, StubPlanner)
+
+
+def test_get_shopping_list_builder_returns_stub_in_stub_mode():
+    if get_core_mode() != "stub":
+        pytest.skip("requires stub mode")
+
+    builder = get_shopping_list_builder()
+    assert isinstance(builder, StubShopping)
+
+
+def test_get_meal_planner_forwards_planning_model(monkeypatch):
+    fake_client = _install_fake_anthropic(monkeypatch)
+    received: dict = {}
+
+    class FakePlanner:
+        def __init__(self, client, model):
+            received["client"] = client
+            received["model"] = model
+
+    monkeypatch.setattr(api_deps, "_CORE_MODE", "proprietary")
+    monkeypatch.setattr(api_deps, "MealPlanner", FakePlanner)
+    monkeypatch.setattr(api_deps.settings, "anthropic_model_planning", "claude-sonnet-plan-test")
+
+    instance = api_deps.get_meal_planner()
+
+    assert isinstance(instance, FakePlanner)
+    assert received["client"] is fake_client
+    assert received["model"] == "claude-sonnet-plan-test"
+
+
+def test_get_shopping_list_builder_forwards_shopping_model_and_reasoner(monkeypatch):
+    fake_client = _install_fake_anthropic(monkeypatch)
+    received: dict = {}
+
+    class FakeBuilder:
+        def __init__(self, client, reasoner, model):
+            received["client"] = client
+            received["reasoner"] = reasoner
+            received["model"] = model
+
+    monkeypatch.setattr(api_deps, "_CORE_MODE", "proprietary")
+    monkeypatch.setattr(api_deps, "ShoppingListBuilder", FakeBuilder)
+    monkeypatch.setattr(api_deps.settings, "anthropic_model_shopping", "claude-haiku-shop-test")
+
+    instance = api_deps.get_shopping_list_builder()
+
+    assert isinstance(instance, FakeBuilder)
+    assert received["client"] is fake_client
+    assert received["model"] == "claude-haiku-shop-test"
+    assert isinstance(received["reasoner"], type(api_deps.get_ingredient_reasoner()))
