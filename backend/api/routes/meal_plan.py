@@ -239,6 +239,7 @@ def generate_shopping_list(
 
     profile = _resolve_profile(session, plan.user_id)
     attribution = _collect_ingredients(plan)
+    attribution = _subtract_pantry(attribution, plan.pantry_ingredients or [])
     items = builder.build(
         attribution,
         profile=profile,
@@ -260,3 +261,15 @@ def _collect_ingredients(plan) -> dict[str, list[str]]:
         for ingredient in data.get("ingredients") or data.get("ingredients_summary") or []:
             attribution.setdefault(ingredient, []).append(recipe.recipe_id)
     return attribution
+
+
+def _subtract_pantry(
+    attribution: dict[str, list[str]], pantry: list[str]
+) -> dict[str, list[str]]:
+    """Drop ingredients already in the pantry (case-insensitive substring)."""
+    pantry_terms = [p.lower().strip() for p in pantry if p and p.strip()]
+    return {
+        name: recipe_ids
+        for name, recipe_ids in attribution.items()
+        if not any(term in name.lower() for term in pantry_terms)
+    }
