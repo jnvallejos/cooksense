@@ -86,6 +86,47 @@ def test_settings_default_anthropic_max_tokens_qa():
 
 
 # ---------------------------------------------------------------------------
+# Phase 3 defaults
+# ---------------------------------------------------------------------------
+
+
+def test_settings_default_anthropic_model_planning():
+    assert Settings().anthropic_model_planning == "claude-sonnet-4-6"
+
+
+def test_settings_default_anthropic_model_shopping():
+    assert Settings().anthropic_model_shopping == "claude-haiku-4-5"
+
+
+def test_settings_default_anthropic_max_tokens_planning():
+    assert Settings().anthropic_max_tokens_planning == 4096
+
+
+def test_settings_default_anthropic_max_tokens_shopping():
+    assert Settings().anthropic_max_tokens_shopping == 1024
+
+
+def test_settings_default_meal_plan_default_days():
+    assert Settings().meal_plan_default_days == 3
+
+
+def test_settings_default_meal_plan_meals_per_day():
+    assert Settings().meal_plan_meals_per_day == "breakfast,lunch,dinner"
+
+
+def test_settings_default_meal_plan_candidate_pool_size():
+    assert Settings().meal_plan_candidate_pool_size == 50
+
+
+def test_settings_default_rate_limit_meal_plan_per_day():
+    assert Settings().rate_limit_meal_plan_per_day == 1
+
+
+def test_settings_default_cache_ttl_meal_plan_seconds():
+    assert Settings().cache_ttl_meal_plan_seconds == 7 * 24 * 3600
+
+
+# ---------------------------------------------------------------------------
 # Env overrides
 # ---------------------------------------------------------------------------
 
