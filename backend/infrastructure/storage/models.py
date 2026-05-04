@@ -9,7 +9,7 @@ for rate limiting. Future phases extend the schema; for now we rely on
 
 from datetime import UTC, date, datetime
 
-from sqlalchemy import JSON, Date, DateTime, String
+from sqlalchemy import JSON, Date, DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -71,3 +71,42 @@ class UserDailyUsage(Base):
     usage_date: Mapped[date] = mapped_column(Date, primary_key=True)
     vision_calls: Mapped[int] = mapped_column(default=0)
     qa_calls: Mapped[int] = mapped_column(default=0)
+
+
+class MealPlan(Base):
+    """Persisted meal plan.
+
+    Pantry is stored at creation time so shopping list derivation is stable
+    even if the user's pantry changes later.
+    """
+
+    __tablename__ = "meal_plans"
+
+    plan_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(36), index=True)
+    pantry_ingredients: Mapped[list[str]] = mapped_column(JSON, default=list)
+    days: Mapped[int] = mapped_column()
+    meals_per_day: Mapped[list[str]] = mapped_column(JSON, default=list)
+    language: Mapped[str] = mapped_column(String(2))
+    ingredient_reuse_score: Mapped[float] = mapped_column(Float)
+    variety_score: Mapped[float] = mapped_column(Float)
+    macro_alignment_score: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class MealPlanRecipe(Base):
+    """A recipe slot inside a meal plan.
+
+    Recipe data is snapshotted as JSON so the plan stays stable even if the
+    underlying corpus changes.
+    """
+
+    __tablename__ = "meal_plan_recipes"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    plan_id: Mapped[str] = mapped_column(ForeignKey("meal_plans.plan_id"), index=True)
+    day_number: Mapped[int] = mapped_column()
+    slot: Mapped[str] = mapped_column(String(20))
+    recipe_id: Mapped[str] = mapped_column(String(64))
+    recipe_data: Mapped[dict] = mapped_column(JSON)
+    personalized_note: Mapped[str | None] = mapped_column(String(500), default=None)
