@@ -33,6 +33,7 @@ from api.middleware.user_id import require_user_id
 from api.models.meal_plan import MealPlanRequest, MealPlanResponse
 from infrastructure.config import settings
 from infrastructure.db.recipe_repository import RecipeRepository
+from infrastructure.storage.meal_plan_repository import MealPlanRepository
 from infrastructure.storage.postgres import get_session
 from infrastructure.storage.profile_repository import ProfileRepository
 
@@ -122,14 +123,27 @@ def generate_meal_plan(
         max_tokens=settings.anthropic_max_tokens_planning,
     )
 
-    return MealPlanResponse(
-        plan_id=str(uuid4()),
+    plan_id = str(uuid4())
+    plan_repo = MealPlanRepository(session)
+    saved = plan_repo.save(
+        plan_id=plan_id,
         user_id=user_id,
+        pantry=norm_ingredients,
+        days=payload.days,
+        meals_per_day=list(payload.meals_per_day),
         language=profile["language"],
-        created_at=datetime.now(UTC),
-        days=plan["days"],
-        ingredient_reuse_score=plan["ingredient_reuse_score"],
-        variety_score=plan["variety_score"],
-        macro_alignment_score=plan["macro_alignment_score"],
+        plan_payload=plan,
+    )
+
+    response = plan_repo.to_response_dict(saved)
+    return MealPlanResponse(
+        plan_id=response["plan_id"],
+        user_id=response["user_id"],
+        language=response["language"],
+        created_at=response["created_at"] or datetime.now(UTC),
+        days=response["days"],
+        ingredient_reuse_score=response["ingredient_reuse_score"],
+        variety_score=response["variety_score"],
+        macro_alignment_score=response["macro_alignment_score"],
         from_cache=False,
     )
