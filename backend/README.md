@@ -75,3 +75,14 @@ ruff format .
 ## Open Core
 
 This backend imports from either `cooksense-core` (private proprietary package) or the bundled `stub` package. See `api/deps.py` for the import pattern. Without `cooksense-core` installed, the backend falls back to the stub automatically and the API runs end-to-end with naive ranking + identity translation.
+
+## Phase 3 progress
+
+Phase 3 ships meal planning + shopping list backends:
+
+- `MealPlan` and `MealPlanRecipe` SQLAlchemy tables with cascade-delete on plan removal.
+- `MealPlanRepository` for save / get / ownership / response projection.
+- Stub `MealPlanner` (random selection with neutral 0.5 scores and bilingual placeholder padding) and stub `ShoppingListBuilder` (identity attribution, generic "some" quantity, "other" category).
+- New deps factories `get_meal_planner` / `get_shopping_list_builder` (`lru_cache(maxsize=1)`, lazy `anthropic.Anthropic()` in proprietary mode).
+- `LLMCache` extended with `kind="meal_plan"`; `DailyUsageLimiter` extended with `kind="plan"` (backed by the new strictly-additive `plan_calls` column on `UserDailyUsage`).
+- All Phase 3 settings (planning + shopping models, max_tokens, candidate pool size, default days, meals-per-day, plan rate limit, plan TTL) live in `infrastructure/config.py` with default and env-override coverage.
