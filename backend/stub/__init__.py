@@ -13,6 +13,7 @@ from .personalized_describer import PersonalizedDescriber
 from .qa_responder import QAResponder
 from .ranker import RecipeRanker
 from .reasoner import IngredientReasoner
+from .shopping_list_builder import ShoppingListBuilder
 from .translator import Translator
 from .vision_extractor import VisionExtractor
 
@@ -22,6 +23,7 @@ __all__ = [
     "PersonalizedDescriber",
     "QAResponder",
     "RecipeRanker",
+    "ShoppingListBuilder",
     "Translator",
     "VisionExtractor",
 ]
