@@ -32,6 +32,13 @@ class _FakeRepo:
         return list(self.recipes[:limit])
 
 
+@pytest.fixture(autouse=True)
+def _high_rate_limit(monkeypatch):
+    from infrastructure import config as config_module
+
+    monkeypatch.setattr(config_module.settings, "rate_limit_meal_plan_per_day", 100)
+
+
 @pytest.fixture
 def fake_repo(app) -> _FakeRepo:
     repo = _FakeRepo()

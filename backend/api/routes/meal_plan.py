@@ -35,6 +35,7 @@ from api.middleware.user_id import require_user_id
 from api.models.meal_plan import MealPlanRequest, MealPlanResponse
 from infrastructure.config import settings
 from infrastructure.db.recipe_repository import RecipeRepository
+from infrastructure.storage.daily_usage import DailyUsageLimiter, RateLimitExceeded
 from infrastructure.storage.llm_cache import LLMCache
 from infrastructure.storage.meal_plan_repository import MealPlanRepository
 from infrastructure.storage.postgres import get_session
@@ -156,6 +157,14 @@ def generate_meal_plan(
                 macro_alignment_score=response["macro_alignment_score"],
                 from_cache=True,
             )
+
+    limiter = DailyUsageLimiter(session)
+    try:
+        limiter.check_and_increment(
+            user_id, kind="plan", limit=settings.rate_limit_meal_plan_per_day
+        )
+    except RateLimitExceeded as exc:
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
 
     norm_ingredients = _normalize_ingredients(
         payload.ingredients, reasoner, profile["language"]
