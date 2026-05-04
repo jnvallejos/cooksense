@@ -120,15 +120,9 @@ def test_rate_limit_uses_config_value(client, headers, fake_repo, planner, monke
 
     monkeypatch.setattr(config_module.settings, "rate_limit_meal_plan_per_day", 2)
 
-    a = client.post(
-        "/api/meal-plan/generate", headers=headers, json={"ingredients": ["a"]}
-    )
-    b = client.post(
-        "/api/meal-plan/generate", headers=headers, json={"ingredients": ["b"]}
-    )
-    c = client.post(
-        "/api/meal-plan/generate", headers=headers, json={"ingredients": ["c"]}
-    )
+    a = client.post("/api/meal-plan/generate", headers=headers, json={"ingredients": ["a"]})
+    b = client.post("/api/meal-plan/generate", headers=headers, json={"ingredients": ["b"]})
+    c = client.post("/api/meal-plan/generate", headers=headers, json={"ingredients": ["c"]})
     assert a.status_code == 201
     assert b.status_code == 201
     assert c.status_code == 429

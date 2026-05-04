@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -43,6 +44,9 @@ from infrastructure.storage.llm_cache import LLMCache
 from infrastructure.storage.meal_plan_repository import MealPlanRepository
 from infrastructure.storage.postgres import get_session
 from infrastructure.storage.profile_repository import ProfileRepository
+
+if TYPE_CHECKING:
+    from infrastructure.storage.models import MealPlan
 
 router = APIRouter(prefix="/api/meal-plan", tags=["meal-plan"])
 
@@ -169,9 +173,7 @@ def generate_meal_plan(
     except RateLimitExceeded as exc:
         raise HTTPException(status_code=429, detail=str(exc)) from exc
 
-    norm_ingredients = _normalize_ingredients(
-        payload.ingredients, reasoner, profile["language"]
-    )
+    norm_ingredients = _normalize_ingredients(payload.ingredients, reasoner, profile["language"])
 
     candidates = repo.query_by_ingredients(
         norm_ingredients, limit=settings.meal_plan_candidate_pool_size
@@ -233,9 +235,7 @@ def generate_shopping_list(
     if plan is None:
         raise HTTPException(status_code=404, detail=f"plan {plan_id!r} not found")
     if plan.user_id != user_id:
-        raise HTTPException(
-            status_code=403, detail="plan does not belong to the requesting user"
-        )
+        raise HTTPException(status_code=403, detail="plan does not belong to the requesting user")
 
     profile = _resolve_profile(session, plan.user_id)
     attribution = _collect_ingredients(plan)
@@ -254,7 +254,7 @@ def generate_shopping_list(
     )
 
 
-def _collect_ingredients(plan) -> dict[str, list[str]]:
+def _collect_ingredients(plan: MealPlan) -> dict[str, list[str]]:
     attribution: dict[str, list[str]] = {}
     for recipe in plan.recipes:
         data = recipe.recipe_data or {}
@@ -263,9 +263,7 @@ def _collect_ingredients(plan) -> dict[str, list[str]]:
     return attribution
 
 
-def _subtract_pantry(
-    attribution: dict[str, list[str]], pantry: list[str]
-) -> dict[str, list[str]]:
+def _subtract_pantry(attribution: dict[str, list[str]], pantry: list[str]) -> dict[str, list[str]]:
     """Drop ingredients already in the pantry (case-insensitive substring)."""
     pantry_terms = [p.lower().strip() for p in pantry if p and p.strip()]
     return {

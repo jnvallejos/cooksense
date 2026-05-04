@@ -24,26 +24,20 @@ def _candidates(count: int) -> list[dict]:
 
 
 def test_returns_three_days_with_three_meals_each():
-    plan = MealPlanner().plan(
-        ingredients=["pasta"], profile={}, candidates=_candidates(50)
-    )
+    plan = MealPlanner().plan(ingredients=["pasta"], profile={}, candidates=_candidates(50))
     assert len(plan["days"]) == 3
     for day in plan["days"]:
         assert len(day["meals"]) == 3
 
 
 def test_uses_canonical_slot_order():
-    plan = MealPlanner().plan(
-        ingredients=["pasta"], profile={}, candidates=_candidates(20)
-    )
+    plan = MealPlanner().plan(ingredients=["pasta"], profile={}, candidates=_candidates(20))
     for day in plan["days"]:
         assert [m["slot"] for m in day["meals"]] == ["breakfast", "lunch", "dinner"]
 
 
 def test_returns_neutral_scores():
-    plan = MealPlanner().plan(
-        ingredients=["pasta"], profile={}, candidates=_candidates(20)
-    )
+    plan = MealPlanner().plan(ingredients=["pasta"], profile={}, candidates=_candidates(20))
     assert plan["ingredient_reuse_score"] == 0.5
     assert plan["variety_score"] == 0.5
     assert plan["macro_alignment_score"] == 0.5
@@ -58,28 +52,20 @@ def test_pads_when_pool_smaller_than_requested_slots():
         profile={},
         candidates=_candidates(2),
     )
-    titles = [
-        meal["recipe"]["title"]
-        for day in plan["days"]
-        for meal in day["meals"]
-    ]
+    titles = [meal["recipe"]["title"] for day in plan["days"] for meal in day["meals"]]
     placeholder_count = sum(1 for t in titles if "Demo recipe" in t)
     assert placeholder_count == 7  # 9 slots minus the 2 real candidates
 
 
 def test_pads_with_bilingual_placeholder_titles():
-    plan = MealPlanner().plan(
-        ingredients=["pasta"], profile={}, candidates=[]
-    )
+    plan = MealPlanner().plan(ingredients=["pasta"], profile={}, candidates=[])
     placeholder = plan["days"][0]["meals"][0]["recipe"]
     assert "Demo recipe" in placeholder["title"]
     assert "Receta demo" in placeholder["title_es"]
 
 
 def test_handles_empty_candidates_with_full_placeholder_plan():
-    plan = MealPlanner().plan(
-        ingredients=["pasta"], profile={}, candidates=[]
-    )
+    plan = MealPlanner().plan(ingredients=["pasta"], profile={}, candidates=[])
     total_meals = sum(len(d["meals"]) for d in plan["days"])
     assert total_meals == 9
 

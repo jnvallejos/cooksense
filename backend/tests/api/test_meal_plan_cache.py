@@ -109,7 +109,9 @@ def payload() -> dict:
     }
 
 
-def test_second_call_with_same_input_returns_from_cache(client, headers, payload, fake_repo, planner):
+def test_second_call_with_same_input_returns_from_cache(
+    client, headers, payload, fake_repo, planner
+):
     first = client.post("/api/meal-plan/generate", headers=headers, json=payload)
     second = client.post("/api/meal-plan/generate", headers=headers, json=payload)
 

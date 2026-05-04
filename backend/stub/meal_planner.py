@@ -55,9 +55,7 @@ class MealPlanner:
                             "title_es": recipe.get("title_es"),
                             "estimated_time_minutes": recipe.get("estimated_time_minutes", 30),
                             "match_percentage": 0.5,
-                            "ingredients_summary": list(
-                                (recipe.get("ingredients") or [])[:3]
-                            ),
+                            "ingredients_summary": list((recipe.get("ingredients") or [])[:3]),
                             "personalized_note": "Demo placeholder.",
                         },
                     }
