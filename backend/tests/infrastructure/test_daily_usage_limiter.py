@@ -95,3 +95,33 @@ def test_unknown_kind_raises_value_error(session):
     limiter = DailyUsageLimiter(session)
     with pytest.raises(ValueError):
         limiter.check_and_increment(USER, kind="bogus", limit=5)
+
+
+# ---------------------------------------------------------------------------
+# Phase 3: plan kind
+# ---------------------------------------------------------------------------
+
+
+def test_plan_first_call_returns_remaining_minus_one(session):
+    limiter = DailyUsageLimiter(session)
+    remaining = limiter.check_and_increment(USER, kind="plan", limit=1)
+    assert remaining == 0
+
+
+def test_plan_raises_when_over_limit(session):
+    limiter = DailyUsageLimiter(session)
+    limiter.check_and_increment(USER, kind="plan", limit=1)
+    with pytest.raises(RateLimitExceeded):
+        limiter.check_and_increment(USER, kind="plan", limit=1)
+
+
+def test_plan_counter_independent_of_vision_and_qa(session):
+    limiter = DailyUsageLimiter(session)
+    limiter.check_and_increment(USER, kind="vision", limit=5)
+    limiter.check_and_increment(USER, kind="qa", limit=10)
+    limiter.check_and_increment(USER, kind="plan", limit=2)
+
+    row = session.execute(select(UserDailyUsage)).scalar_one()
+    assert row.vision_calls == 1
+    assert row.qa_calls == 1
+    assert row.plan_calls == 1

@@ -60,5 +60,24 @@ class Settings(BaseSettings):
     anthropic_max_tokens_personalization: int = 512
     anthropic_max_tokens_qa: int = 1024
 
+    # --- Phase 3: Anthropic models for planning + shopping ---
+    anthropic_model_planning: str = "claude-sonnet-4-6"
+    anthropic_model_shopping: str = "claude-haiku-4-5"
+
+    # --- Phase 3: Anthropic call ceilings ---
+    anthropic_max_tokens_planning: int = 4096
+    anthropic_max_tokens_shopping: int = 1024
+
+    # --- Phase 3: meal plan structure ---
+    meal_plan_default_days: int = 3
+    meal_plan_meals_per_day: str = "breakfast,lunch,dinner"
+    meal_plan_candidate_pool_size: int = 50
+
+    # --- Phase 3: rate limit per user per day ---
+    rate_limit_meal_plan_per_day: int = 1
+
+    # --- Phase 3: LLM cache TTL ---
+    cache_ttl_meal_plan_seconds: int = 7 * 24 * 3600
+
 
 settings = Settings()

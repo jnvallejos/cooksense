@@ -86,6 +86,47 @@ def test_settings_default_anthropic_max_tokens_qa():
 
 
 # ---------------------------------------------------------------------------
+# Phase 3 defaults
+# ---------------------------------------------------------------------------
+
+
+def test_settings_default_anthropic_model_planning():
+    assert Settings().anthropic_model_planning == "claude-sonnet-4-6"
+
+
+def test_settings_default_anthropic_model_shopping():
+    assert Settings().anthropic_model_shopping == "claude-haiku-4-5"
+
+
+def test_settings_default_anthropic_max_tokens_planning():
+    assert Settings().anthropic_max_tokens_planning == 4096
+
+
+def test_settings_default_anthropic_max_tokens_shopping():
+    assert Settings().anthropic_max_tokens_shopping == 1024
+
+
+def test_settings_default_meal_plan_default_days():
+    assert Settings().meal_plan_default_days == 3
+
+
+def test_settings_default_meal_plan_meals_per_day():
+    assert Settings().meal_plan_meals_per_day == "breakfast,lunch,dinner"
+
+
+def test_settings_default_meal_plan_candidate_pool_size():
+    assert Settings().meal_plan_candidate_pool_size == 50
+
+
+def test_settings_default_rate_limit_meal_plan_per_day():
+    assert Settings().rate_limit_meal_plan_per_day == 1
+
+
+def test_settings_default_cache_ttl_meal_plan_seconds():
+    assert Settings().cache_ttl_meal_plan_seconds == 7 * 24 * 3600
+
+
+# ---------------------------------------------------------------------------
 # Env overrides
 # ---------------------------------------------------------------------------
 
@@ -103,10 +144,19 @@ def isolated_env(monkeypatch, tmp_path):
         "ANTHROPIC_MODEL_VISION",
         "ANTHROPIC_MODEL_PERSONALIZATION",
         "ANTHROPIC_MODEL_QA",
+        "ANTHROPIC_MODEL_PLANNING",
+        "ANTHROPIC_MODEL_SHOPPING",
         "IMAGE_MAX_SIZE_BYTES",
         "RATE_LIMIT_VISION_PER_DAY",
         "RATE_LIMIT_QA_PER_DAY",
+        "RATE_LIMIT_MEAL_PLAN_PER_DAY",
         "CACHE_TTL_VISION_SECONDS",
+        "CACHE_TTL_MEAL_PLAN_SECONDS",
+        "MEAL_PLAN_DEFAULT_DAYS",
+        "MEAL_PLAN_MEALS_PER_DAY",
+        "MEAL_PLAN_CANDIDATE_POOL_SIZE",
+        "ANTHROPIC_MAX_TOKENS_PLANNING",
+        "ANTHROPIC_MAX_TOKENS_SHOPPING",
     ):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.chdir(tmp_path)
@@ -125,3 +175,51 @@ def test_settings_env_override_rate_limit_vision_per_day(isolated_env, monkeypat
 def test_settings_env_override_cache_ttl_vision_seconds(isolated_env, monkeypatch):
     monkeypatch.setenv("CACHE_TTL_VISION_SECONDS", "60")
     assert Settings().cache_ttl_vision_seconds == 60
+
+
+# --- Phase 3 env overrides ---
+
+
+def test_settings_env_override_anthropic_model_planning(isolated_env, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_MODEL_PLANNING", "claude-opus-4-7")
+    assert Settings().anthropic_model_planning == "claude-opus-4-7"
+
+
+def test_settings_env_override_anthropic_model_shopping(isolated_env, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_MODEL_SHOPPING", "claude-haiku-test")
+    assert Settings().anthropic_model_shopping == "claude-haiku-test"
+
+
+def test_settings_env_override_anthropic_max_tokens_planning(isolated_env, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_MAX_TOKENS_PLANNING", "8192")
+    assert Settings().anthropic_max_tokens_planning == 8192
+
+
+def test_settings_env_override_anthropic_max_tokens_shopping(isolated_env, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_MAX_TOKENS_SHOPPING", "2048")
+    assert Settings().anthropic_max_tokens_shopping == 2048
+
+
+def test_settings_env_override_meal_plan_default_days(isolated_env, monkeypatch):
+    monkeypatch.setenv("MEAL_PLAN_DEFAULT_DAYS", "5")
+    assert Settings().meal_plan_default_days == 5
+
+
+def test_settings_env_override_meal_plan_meals_per_day(isolated_env, monkeypatch):
+    monkeypatch.setenv("MEAL_PLAN_MEALS_PER_DAY", "breakfast,lunch")
+    assert Settings().meal_plan_meals_per_day == "breakfast,lunch"
+
+
+def test_settings_env_override_meal_plan_candidate_pool_size(isolated_env, monkeypatch):
+    monkeypatch.setenv("MEAL_PLAN_CANDIDATE_POOL_SIZE", "100")
+    assert Settings().meal_plan_candidate_pool_size == 100
+
+
+def test_settings_env_override_rate_limit_meal_plan_per_day(isolated_env, monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_MEAL_PLAN_PER_DAY", "3")
+    assert Settings().rate_limit_meal_plan_per_day == 3
+
+
+def test_settings_env_override_cache_ttl_meal_plan_seconds(isolated_env, monkeypatch):
+    monkeypatch.setenv("CACHE_TTL_MEAL_PLAN_SECONDS", "300")
+    assert Settings().cache_ttl_meal_plan_seconds == 300

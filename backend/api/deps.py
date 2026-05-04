@@ -24,9 +24,11 @@ logger = logging.getLogger(__name__)
 try:
     from cooksense_core import (  # type: ignore[import-not-found]
         IngredientReasoner,
+        MealPlanner,
         PersonalizedDescriber,
         QAResponder,
         RecipeRanker,
+        ShoppingListBuilder,
         Translator,
         VisionExtractor,
     )
@@ -36,9 +38,11 @@ try:
 except ImportError:
     from stub import (
         IngredientReasoner,
+        MealPlanner,
         PersonalizedDescriber,
         QAResponder,
         RecipeRanker,
+        ShoppingListBuilder,
         Translator,
         VisionExtractor,
     )
@@ -135,6 +139,49 @@ def get_qa_responder() -> QAResponder:
             model=settings.anthropic_model_qa,
         )
     return QAResponder()
+
+
+@lru_cache(maxsize=1)
+def get_meal_planner() -> MealPlanner:
+    """Instantiate the active MealPlanner (proprietary or stub).
+
+    Stub mode uses a no-arg constructor. Proprietary mode lazily builds an
+    Anthropic client and forwards `settings.anthropic_model_planning`.
+    """
+    if _CORE_MODE == "proprietary":
+        import anthropic
+
+        logger.info(
+            "constructing proprietary MealPlanner (model=%s)",
+            settings.anthropic_model_planning,
+        )
+        return MealPlanner(
+            client=anthropic.Anthropic(),
+            model=settings.anthropic_model_planning,
+        )
+    return MealPlanner()
+
+
+@lru_cache(maxsize=1)
+def get_shopping_list_builder() -> ShoppingListBuilder:
+    """Instantiate the active ShoppingListBuilder (proprietary or stub).
+
+    The proprietary builder needs an `IngredientReasoner` for category lookup.
+    The stub takes the same kwarg and ignores it.
+    """
+    if _CORE_MODE == "proprietary":
+        import anthropic
+
+        logger.info(
+            "constructing proprietary ShoppingListBuilder (model=%s)",
+            settings.anthropic_model_shopping,
+        )
+        return ShoppingListBuilder(
+            client=anthropic.Anthropic(),
+            reasoner=get_ingredient_reasoner(),
+            model=settings.anthropic_model_shopping,
+        )
+    return ShoppingListBuilder(reasoner=get_ingredient_reasoner())
 
 
 @lru_cache(maxsize=1)

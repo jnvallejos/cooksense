@@ -34,8 +34,10 @@ All endpoints except `/api/healthz` require an `X-User-Id` header containing a U
 - `POST /api/recipes/search` — search recipes by ingredients. Body: `{"ingredients": [...], "limit": 5}`. Returns `RecipeSearchResponse` with ranked candidates, `total_found`, `query_id`, and a `personalized_description` on the top `personalize_top_n_recipes` results.
 - `POST /api/vision/extract-ingredients` — multipart upload (`image` field). Returns the detected ingredients, the SHA-256 image hash, `from_cache`, and `remaining_calls_today`. Daily quota: `rate_limit_vision_per_day`.
 - `POST /api/recipes/{recipe_id}/ask` — conversational follow-up. Body: `{"question": "...", "previous_questions": [...]}`. Server caps history to `qa_max_previous_questions`. Daily quota: `rate_limit_qa_per_day`.
+- `POST /api/meal-plan/generate` — generate a 3-day meal plan (breakfast/lunch/dinner) from pantry ingredients. Body: `{"ingredients": [...], "days": 3, "meals_per_day": ["breakfast", "lunch", "dinner"]}`. Returns 201 with the persisted plan, `from_cache`, and three score floats. V1 fixes `days=3` and the canonical slot triple; other values yield 400. Cache hits short-circuit the planner and skip the daily quota. Daily quota: `rate_limit_meal_plan_per_day` (default 1).
+- `POST /api/meal-plan/{plan_id}/shopping` — derive a shopping list from a persisted plan minus its pantry. 404 when the plan is missing, 403 when it belongs to a different user. No caching. Items default to bilingual identity in stub mode and to consolidated quantities in proprietary mode.
 
-The search endpoint reads the user's profile (defaults are used if missing), queries ChromaDB for the top 20 candidates, runs them through `RecipeRanker.rank`, and personalizes the top-N via `PersonalizedDescriber`. The vision endpoint hashes uploaded images, caches results in `LLMCache` for `cache_ttl_vision_seconds`, and never persists the bytes. The ask endpoint keys the response cache by `(recipe_id, question_hash, history_hash, language)`.
+The search endpoint reads the user's profile (defaults are used if missing), queries ChromaDB for the top 20 candidates, runs them through `RecipeRanker.rank`, and personalizes the top-N via `PersonalizedDescriber`. The vision endpoint hashes uploaded images, caches results in `LLMCache` for `cache_ttl_vision_seconds`, and never persists the bytes. The ask endpoint keys the response cache by `(recipe_id, question_hash, history_hash, language)`. The meal plan endpoint keys the cache by `(sorted_canonical_ingredients, profile_signature)` and stores `{plan_id}` so cache hits resolve back to the persisted plan; the cache TTL is `cache_ttl_meal_plan_seconds`. The shopping endpoint subtracts pantry items case-insensitively (substring match) before passing the remainder to `ShoppingListBuilder.build`.
 
 Every model name, cap, TTL, and daily limit is config-driven (`infrastructure/config.py`); endpoints never hardcode tunables. Phase 5 will override defaults via Fly.io secrets.
 
@@ -73,3 +75,14 @@ ruff format .
 ## Open Core
 
 This backend imports from either `cooksense-core` (private proprietary package) or the bundled `stub` package. See `api/deps.py` for the import pattern. Without `cooksense-core` installed, the backend falls back to the stub automatically and the API runs end-to-end with naive ranking + identity translation.
+
+## Phase 3 progress
+
+Phase 3 ships meal planning + shopping list backends:
+
+- `MealPlan` and `MealPlanRecipe` SQLAlchemy tables with cascade-delete on plan removal.
+- `MealPlanRepository` for save / get / ownership / response projection.
+- Stub `MealPlanner` (random selection with neutral 0.5 scores and bilingual placeholder padding) and stub `ShoppingListBuilder` (identity attribution, generic "some" quantity, "other" category).
+- New deps factories `get_meal_planner` / `get_shopping_list_builder` (`lru_cache(maxsize=1)`, lazy `anthropic.Anthropic()` in proprietary mode).
+- `LLMCache` extended with `kind="meal_plan"`; `DailyUsageLimiter` extended with `kind="plan"` (backed by the new strictly-additive `plan_calls` column on `UserDailyUsage`).
+- All Phase 3 settings (planning + shopping models, max_tokens, candidate pool size, default days, meals-per-day, plan rate limit, plan TTL) live in `infrastructure/config.py` with default and env-override coverage.

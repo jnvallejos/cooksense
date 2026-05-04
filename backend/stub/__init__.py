@@ -8,18 +8,22 @@ In production, the real `cooksense-core` package is installed and overrides
 this stub. See backend/api/deps.py for the import logic.
 """
 
+from .meal_planner import MealPlanner
 from .personalized_describer import PersonalizedDescriber
 from .qa_responder import QAResponder
 from .ranker import RecipeRanker
 from .reasoner import IngredientReasoner
+from .shopping_list_builder import ShoppingListBuilder
 from .translator import Translator
 from .vision_extractor import VisionExtractor
 
 __all__ = [
     "IngredientReasoner",
+    "MealPlanner",
     "PersonalizedDescriber",
     "QAResponder",
     "RecipeRanker",
+    "ShoppingListBuilder",
     "Translator",
     "VisionExtractor",
 ]
