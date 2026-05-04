@@ -173,6 +173,130 @@ def test_is_owner_returns_false_for_missing_plan(session):
     assert repo.is_owner("nope", USER) is False
 
 
+def test_to_response_dict_orders_days_and_slots(session):
+    repo = MealPlanRepository(session)
+    payload = {
+        "days": [
+            {
+                "day_number": 2,
+                "meals": [
+                    {
+                        "slot": "dinner",
+                        "recipe": {
+                            "id": "r-d2-dinner",
+                            "title": "Stew",
+                            "title_es": "Estofado",
+                            "estimated_time_minutes": 60,
+                            "match_percentage": 0.8,
+                            "ingredients_summary": ["beef"],
+                            "personalized_note": "Hearty.",
+                        },
+                    },
+                    {
+                        "slot": "breakfast",
+                        "recipe": {
+                            "id": "r-d2-breakfast",
+                            "title": "Toast",
+                            "title_es": "Tostada",
+                            "estimated_time_minutes": 5,
+                            "match_percentage": 0.4,
+                            "ingredients_summary": ["bread"],
+                            "personalized_note": "Light.",
+                        },
+                    },
+                    {
+                        "slot": "lunch",
+                        "recipe": {
+                            "id": "r-d2-lunch",
+                            "title": "Soup",
+                            "title_es": "Sopa",
+                            "estimated_time_minutes": 25,
+                            "match_percentage": 0.5,
+                            "ingredients_summary": ["onion"],
+                            "personalized_note": "Warm.",
+                        },
+                    },
+                ],
+            },
+            {
+                "day_number": 1,
+                "meals": [
+                    {
+                        "slot": "breakfast",
+                        "recipe": {
+                            "id": "r-d1-breakfast",
+                            "title": "Eggs",
+                            "title_es": "Huevos",
+                            "estimated_time_minutes": 10,
+                            "match_percentage": 0.3,
+                            "ingredients_summary": ["egg"],
+                            "personalized_note": "Quick.",
+                        },
+                    },
+                    {
+                        "slot": "lunch",
+                        "recipe": {
+                            "id": "r-d1-lunch",
+                            "title": "Salad",
+                            "title_es": "Ensalada",
+                            "estimated_time_minutes": 15,
+                            "match_percentage": 0.4,
+                            "ingredients_summary": ["lettuce"],
+                            "personalized_note": "Fresh.",
+                        },
+                    },
+                    {
+                        "slot": "dinner",
+                        "recipe": {
+                            "id": "r-d1-dinner",
+                            "title": "Pasta",
+                            "title_es": "Pasta",
+                            "estimated_time_minutes": 20,
+                            "match_percentage": 0.6,
+                            "ingredients_summary": ["pasta"],
+                            "personalized_note": "Filling.",
+                        },
+                    },
+                ],
+            },
+        ],
+        "ingredient_reuse_score": 0.5,
+        "variety_score": 0.6,
+        "macro_alignment_score": 0.7,
+    }
+    repo.save(
+        plan_id=PLAN,
+        user_id=USER,
+        pantry=["egg"],
+        days=2,
+        meals_per_day=["breakfast", "lunch", "dinner"],
+        language="en",
+        plan_payload=payload,
+    )
+
+    plan = repo.get_by_id(PLAN)
+    assert plan is not None
+    response = repo.to_response_dict(plan)
+
+    assert response["plan_id"] == PLAN
+    assert response["user_id"] == USER
+    assert response["language"] == "en"
+    assert response["ingredient_reuse_score"] == 0.5
+    assert response["variety_score"] == 0.6
+    assert response["macro_alignment_score"] == 0.7
+    assert "created_at" in response
+
+    days = response["days"]
+    assert [d["day_number"] for d in days] == [1, 2]
+    assert [m["slot"] for m in days[0]["meals"]] == ["breakfast", "lunch", "dinner"]
+    assert [m["slot"] for m in days[1]["meals"]] == ["breakfast", "lunch", "dinner"]
+    first = days[0]["meals"][0]["recipe"]
+    assert first["id"] == "r-d1-breakfast"
+    assert first["title_es"] == "Huevos"
+    assert first["personalized_note"] == "Quick."
+    assert first["ingredients_summary"] == ["egg"]
+
+
 def test_cascade_delete_recipes_when_plan_deleted(session):
     repo = MealPlanRepository(session)
     repo.save(
