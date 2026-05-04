@@ -73,3 +73,9 @@ class MealPlanRepository:
             .options(selectinload(MealPlan.recipes))
         )
         return self._session.execute(stmt).scalar_one_or_none()
+
+    def is_owner(self, plan_id: str, user_id: str) -> bool:
+        """Cheap ownership check that skips loading the recipe rows."""
+        stmt = select(MealPlan.user_id).where(MealPlan.plan_id == plan_id)
+        owner = self._session.execute(stmt).scalar_one_or_none()
+        return owner == user_id if owner is not None else False
