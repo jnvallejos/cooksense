@@ -219,7 +219,7 @@ def generate_meal_plan(
 @router.post("/{plan_id}/shopping", response_model=ShoppingListResponse)
 def generate_shopping_list(
     plan_id: str,
-    user_id: str = Depends(require_user_id),  # noqa: ARG001 - validation only
+    user_id: str = Depends(require_user_id),
     session: Session = Depends(get_session),
     builder: ShoppingListBuilder = Depends(get_shopping_list_builder),
 ) -> ShoppingListResponse:
@@ -232,6 +232,10 @@ def generate_shopping_list(
     plan = plan_repo.get_by_id(plan_id)
     if plan is None:
         raise HTTPException(status_code=404, detail=f"plan {plan_id!r} not found")
+    if plan.user_id != user_id:
+        raise HTTPException(
+            status_code=403, detail="plan does not belong to the requesting user"
+        )
 
     profile = _resolve_profile(session, plan.user_id)
     attribution = _collect_ingredients(plan)
