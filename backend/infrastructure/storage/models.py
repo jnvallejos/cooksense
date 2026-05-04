@@ -10,7 +10,7 @@ for rate limiting. Future phases extend the schema; for now we rely on
 from datetime import UTC, date, datetime
 
 from sqlalchemy import JSON, Date, DateTime, Float, ForeignKey, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -93,6 +93,12 @@ class MealPlan(Base):
     macro_alignment_score: Mapped[float] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
+    recipes: Mapped[list["MealPlanRecipe"]] = relationship(
+        back_populates="plan",
+        cascade="all, delete-orphan",
+        order_by="(MealPlanRecipe.day_number, MealPlanRecipe.id)",
+    )
+
 
 class MealPlanRecipe(Base):
     """A recipe slot inside a meal plan.
@@ -104,9 +110,13 @@ class MealPlanRecipe(Base):
     __tablename__ = "meal_plan_recipes"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    plan_id: Mapped[str] = mapped_column(ForeignKey("meal_plans.plan_id"), index=True)
+    plan_id: Mapped[str] = mapped_column(
+        ForeignKey("meal_plans.plan_id", ondelete="CASCADE"), index=True
+    )
     day_number: Mapped[int] = mapped_column()
     slot: Mapped[str] = mapped_column(String(20))
     recipe_id: Mapped[str] = mapped_column(String(64))
     recipe_data: Mapped[dict] = mapped_column(JSON)
     personalized_note: Mapped[str | None] = mapped_column(String(500), default=None)
+
+    plan: Mapped["MealPlan"] = relationship(back_populates="recipes")
